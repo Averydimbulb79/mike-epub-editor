@@ -88,4 +88,71 @@ That’s it.
 
 ## Project File Format
 
-Projects are saved as:
+Projects are saved as: .mee.json
+
+---
+
+
+Contains:
+- metadata  
+- chapters  
+- editor content  
+- theme state  
+- cover image  
+
+---
+
+## Limitations
+
+- No drag-and-drop chapter reordering  
+- No EPUB import  
+- Limited image handling inside chapters  
+- No advanced styling system  
+
+This is a focused tool, not a full publishing pipeline.
+
+---
+
+## Roadmap
+
+- Chapter reordering  
+- Inline image management  
+- EPUB import workflow  
+- Search and replace  
+- Notes / footnotes  
+- Theme customization  
+- UI refinement  
+
+---
+
+## Tech Stack
+
+- HTML
+- CSS
+- Vanilla JavaScript
+- Toast UI Editor
+- Marked
+- DOMPurify
+- JSZip
+
+---
+
+## Design Principles
+
+- Local-first  
+- Zero setup  
+- Single-file portability  
+- Fast iteration  
+- Practical over complex  
+
+---
+
+## License
+
+MIT
+
+---
+
+## Author
+
+Mike
