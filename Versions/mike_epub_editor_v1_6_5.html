@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mike EPUB Editor v1.6.5</title>
+  <meta name="generator" content="Mike EPUB Editor v1.6.5" />
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <style>
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --topbar-h: 60px;
+      --status-h: 42px;
+      --font-ui: "Segoe UI", Inter, system-ui, sans-serif;
+    }
+    body[data-theme="light"] {
+      --bg: #eef1f5; --app: #ffffff; --surface: #ffffff; --surface-2: #f7f8fa; --surface-3: #fbfcfe;
+      --panel: #f8fafc; --line: #d8dde6; --line-2: #c8d0db; --text: #1f2732; --muted: #697586;
+      --heading: #0f141a; --accent: #2563eb; --accent-soft: #e8f0ff; --shadow-soft: 0 2px 10px rgba(20,30,50,.05);
+      --shadow-panel: 0 10px 28px rgba(20,30,50,.08); --sidebar-bg: #f7f9fb; --ok: #0f7b6c; --warn: #8a5a00;
+    }
+    body[data-theme="dark"] {
+      --bg: #0f1217; --app: #141922; --surface: #151b24; --surface-2: #11161e; --surface-3: #1b2330;
+      --panel: #10161f; --line: #2a3342; --line-2: #354054; --text: #e8edf5; --muted: #98a4b5;
+      --heading: #ffffff; --accent: #6da5ff; --accent-soft: rgba(109,165,255,.16); --shadow-soft: 0 2px 12px rgba(0,0,0,.22);
+      --shadow-panel: 0 12px 30px rgba(0,0,0,.3); --sidebar-bg: #10161f; --ok: #4bd6c2; --warn: #ffca6b;
+    }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body.drawer-open { overflow: hidden; }
+    button, input, select, textarea { font: inherit; }
+    input[type=file] { display: none; }
+    .app { height: 100dvh; display: grid; grid-template-rows: calc(var(--topbar-h) + var(--safe-top)) auto auto minmax(0,1fr) calc(var(--status-h) + var(--safe-bottom)); background: var(--app); }
+    .topbar { padding-top: var(--safe-top); display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-left: 16px; padding-right: 16px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--app) 94%, transparent); box-shadow: var(--shadow-soft); z-index: 30; }
+    .topbar-left, .topbar-right, .quick-actions, .row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .app-badge { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; color: white; background: linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow: 0 10px 18px rgba(37,99,235,.25); }
+    .brand-title { font-size: 16px; font-weight: 700; color: var(--heading); line-height: 1.1; }
+    .brand-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 440px; }
+    .quick-btn,.file-label,.menu-btn,.drawer-btn,.sidebar-btn,.mini-btn,.chip,.nav-link,.structure-item,.ribbon-tab,.tool-btn,.field-inline input,.field-inline select,.field-inline textarea {
+      border: 1px solid var(--line); background: var(--surface); color: var(--text); transition: .15s ease;
+    }
+    .quick-btn,.file-label,.menu-btn,.drawer-btn,.sidebar-btn,.mini-btn,.chip {
+      height: 34px; min-width: 34px; padding: 0 12px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer;
+    }
+    .quick-btn:hover,.file-label:hover,.menu-btn:hover,.drawer-btn:hover,.sidebar-btn:hover,.mini-btn:hover,.chip:hover,.nav-link:hover,.structure-item:hover,.tool-btn:hover { background: var(--surface-3); border-color: var(--line-2); }
+    .quick-btn.primary,.mini-btn.primary,.tool-btn.primary,.drawer-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .menu-btn { display: none; min-width: 42px; padding: 0 12px; font-size: 18px; }
+    .ribbon-tabs { display: flex; align-items: end; gap: 4px; padding: 8px 14px 0; border-bottom: 1px solid var(--line); background: var(--surface-2); overflow-x: auto; }
+    .ribbon-tab { height: 34px; padding: 0 12px; border-bottom: none; border-radius: 10px 10px 0 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; flex: 0 0 auto; cursor: pointer; }
+    .ribbon-tab.active { background: var(--surface); color: var(--accent); }
+    .ribbon { background: var(--surface); border-bottom: 1px solid var(--line); padding: 8px 10px; overflow-x: auto; overflow-y: hidden; max-height: 240px; transition: max-height .18s ease, padding .18s ease, border-color .18s ease; }
+    .ribbon.collapsed { max-height: 0; padding-top: 0; padding-bottom: 0; border-bottom-color: transparent; }
+    .ribbon-panel { display: none; }
+    .ribbon-panel.active { display: block; }
+    .ribbon-row { display: flex; align-items: stretch; gap: 8px; min-width: max-content; }
+    .ribbon-group { display: grid; grid-template-rows: 1fr auto; min-width: fit-content; border: 1px solid var(--line); background: linear-gradient(180deg,var(--surface) 0%,var(--panel) 100%); border-radius: 12px; overflow: hidden; }
+    .ribbon-group-body { display: flex; gap: 6px; padding: 6px; align-items: center; min-height: 44px; overflow-x: auto; overflow-y: hidden; }
+    .ribbon-group-label { border-top: 1px solid var(--line); background: var(--surface-2); color: var(--muted); font-size: 10px; text-align: center; padding: 3px 8px; }
+    .ribbon-stack { display: flex; flex-wrap: nowrap; gap: 4px; overflow-x: auto; overflow-y: hidden; }
+    .tool-btn { min-width: 44px; height: 24px; padding: 0 7px; border-radius: 7px; font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; cursor: pointer; flex: 0 0 auto; }
+    .tool-btn.wide { min-width: 60px; }
+    .tool-btn.tiny { min-width: 36px; padding: 0 5px; }
+    .ribbon-fields { display: flex; align-items: flex-end; gap: 6px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; }
+    .field-inline { display: flex; flex-direction: column; gap: 3px; min-width: 118px; flex: 0 0 auto; }
+    .field-inline.narrow { min-width: 76px; }
+    .field-inline.medium { min-width: 102px; }
+    .field-inline.wide { min-width: 180px; }
+    .field-inline label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .field-inline input, .field-inline select, .field-inline textarea { width: 100%; border-radius: 8px; padding: 5px 7px; outline: none; font-size: 11px; height: 30px; }
+    .field-inline textarea { min-height: 44px; height: 44px; resize: none; }
+    .cover-mini { width: 58px; height: 78px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-3); overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 11px; text-align: center; padding: 6px; }
+    .cover-mini img { width: 100%; height: 100%; object-fit: cover; }
+    .workspace { min-height: 0; display: grid; grid-template-columns: 300px minmax(0,1fr); background: var(--bg); overflow: hidden; }
+    .sidebar, .mainpane { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+    .sidebar { border-right: 1px solid var(--line); background: var(--sidebar-bg); }
+    .sidebar-header, .pane-header { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--surface-3); }
+    .sidebar-title, .pane-title { font-size: 12px; font-weight: 800; color: var(--heading); text-transform: uppercase; letter-spacing: .04em; }
+    .pane-meta { font-size: 12px; color: var(--muted); }
+    .sidebar-body { min-height: 0; overflow: hidden; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .sidebar .section-card { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+    .section-card { border: 1px solid var(--line); background: linear-gradient(180deg,var(--surface) 0%,var(--panel) 100%); border-radius: 14px; overflow: hidden; }
+    .section-head { padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-3); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .section-title { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .section-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-height: 0; }
+    .structure-list, .nav-list { display: flex; flex-direction: column; gap: 6px; min-height: 0; overflow: auto; flex: 1 1 auto; }
+    .structure-list, .nav-list { max-height: none; }
+    .structure-item, .nav-link { display: block; width: 100%; text-align: left; text-decoration: none; border-radius: 10px; padding: 9px 10px; cursor: pointer; }
+    .structure-item.active, .nav-link.active { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: var(--accent-soft); }
+    .structure-name { font-weight: 700; color: var(--heading); }
+    .structure-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .nav-outline-item { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+    .nav-outline-row { display: flex; align-items: center; gap: 6px; padding: 7px 8px; }
+    .nav-outline-toggle { width: 22px; height: 22px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface-3); color: var(--muted); cursor: pointer; font-size: 11px; flex: 0 0 auto; }
+    .nav-outline-toggle:disabled { opacity: .35; cursor: default; }
+    .nav-outline-main { flex: 1; min-width: 0; }
+    .nav-link.chapter { font-weight: 700; padding: 0; border: none; background: transparent; }
+    .nav-outline-headings { display: flex; flex-direction: column; gap: 2px; padding: 0 6px 6px 34px; }
+    .nav-link.heading { font-size: 12px; color: var(--muted); padding: 5px 8px; }
+    .navigator-toggle { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+    .navigator-toggle-btn { min-width: 76px; height: 28px; padding: 0 10px; border-radius: 999px; border: none; background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; }
+    .navigator-toggle-btn.active { background: var(--accent-soft); color: var(--accent); }
+    .view-panel { display: none; min-height: 0; flex: 1 1 auto; }
+    .view-panel.active { display: flex; flex-direction: column; }
+    .mainpane { background: var(--surface); }
+    .editor-host { min-height: 0; padding: 12px; background: var(--bg); flex: 1 1 auto; overflow: hidden; }
+    #toastEditor { height: 100%; min-height: 420px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-soft); }
+    .toastui-editor-defaultUI { border: none !important; background: var(--surface) !important; }
+    .toastui-editor-defaultUI-toolbar { background: var(--surface-2) !important; border-bottom-color: var(--line) !important; }
+    .toastui-editor-md-tab-container, .toastui-editor-mode-switch { background: var(--surface-2) !important; border-top-color: var(--line) !important; }
+    .toastui-editor-toolbar-icons, .toastui-editor-toolbar-divider { filter: saturate(.85); }
+    .toastui-editor-main, .toastui-editor-md-container, .toastui-editor-ww-container, .toastui-editor-md-preview, .toastui-editor-contents, .toastui-editor-md-preview .toastui-editor-contents {
+      background: var(--surface) !important; color: var(--text) !important;
+    }
+    .toastui-editor-contents { font-family: var(--font-ui) !important; }
+    .toastui-editor-md-preview { border-left-color: var(--line) !important; }
+    .toastui-editor-md-container .toastui-editor, .toastui-editor-ww-container .toastui-editor { color: var(--text) !important; }
+    .toastui-editor-ww-container .ProseMirror,
+    .toastui-editor-ww-container .ProseMirror p,
+    .toastui-editor-ww-container .ProseMirror li,
+    .toastui-editor-ww-container .ProseMirror blockquote,
+    .toastui-editor-ww-container .ProseMirror td,
+    .toastui-editor-ww-container .ProseMirror th,
+    .toastui-editor-md-container .toastui-editor,
+    .toastui-editor-md-preview .toastui-editor-contents,
+    .toastui-editor-md-preview .toastui-editor-contents p,
+    .toastui-editor-md-preview .toastui-editor-contents li,
+    .toastui-editor-md-preview .toastui-editor-contents blockquote,
+    .toastui-editor-md-preview .toastui-editor-contents td,
+    .toastui-editor-md-preview .toastui-editor-contents th {
+      color: var(--text) !important;
+      opacity: 1 !important;
+      -webkit-text-fill-color: var(--text) !important;
+    }
+    .toastui-editor-contents h1, .toastui-editor-contents h2, .toastui-editor-contents h3,
+    .toastui-editor-contents h4, .toastui-editor-contents h5, .toastui-editor-contents h6 {
+      color: var(--heading) !important;
+      -webkit-text-fill-color: var(--heading) !important;
+    }
+    .toastui-editor-contents a { color: var(--accent) !important; }
+    body[data-theme="dark"] .toastui-editor-defaultUI-toolbar button {
+      background: transparent !important;
+      border-color: transparent !important;
+    }
+    body[data-theme="dark"] .toastui-editor-defaultUI-toolbar button:hover,
+    body[data-theme="dark"] .toastui-editor-defaultUI-toolbar button.active,
+    body[data-theme="dark"] .toastui-editor-toolbar-group button:hover {
+      background: rgba(255,255,255,.08) !important;
+      border-color: var(--line) !important;
+    }
+    body[data-theme="dark"] .toastui-editor-toolbar-icons {
+      filter: brightness(2.2) contrast(1.15) saturate(0) !important;
+      opacity: .96 !important;
+    }
+    body[data-theme="dark"] .toastui-editor-toolbar-divider {
+      filter: brightness(1.6) !important;
+      opacity: .75 !important;
+    }
+    body[data-theme="dark"] .toastui-editor-md-tab-container .tab-item,
+    body[data-theme="dark"] .toastui-editor-mode-switch .tab-item {
+      color: var(--muted) !important;
+    }
+    body[data-theme="dark"] .toastui-editor-md-tab-container .tab-item.active,
+    body[data-theme="dark"] .toastui-editor-mode-switch .tab-item.active {
+      color: var(--heading) !important;
+      background: var(--surface) !important;
+    }
+
+    .statusbar { padding: 0 16px calc(var(--safe-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid var(--line); background: var(--surface-3); color: var(--muted); font-size: 12px; min-height: calc(var(--status-h) + var(--safe-bottom)); flex-wrap: wrap; }
+    .status-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-height: var(--status-h); }
+    .kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 700; padding: 0 6px; }
+    .drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.42); opacity: 0; pointer-events: none; transition: .16s ease; z-index: 120; }
+    .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+    .side-drawer { position: fixed; top: 0; right: 0; width: min(86vw, 360px); height: 100dvh; background: var(--app); border-left: 1px solid var(--line); box-shadow: var(--shadow-panel); transform: translateX(100%); transition: .18s ease; z-index: 130; display: grid; grid-template-rows: auto 1fr; }
+    .side-drawer.open { transform: translateX(0); }
+    .drawer-header { padding-top: var(--safe-top); min-height: calc(60px + var(--safe-top)); display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-left: 14px; padding-right: 14px; border-bottom: 1px solid var(--line); background: var(--surface-3); }
+    .drawer-title { font-size: 15px; font-weight: 700; color: var(--heading); }
+    .drawer-body { overflow: auto; padding: 14px; padding-bottom: calc(14px + var(--safe-bottom)); display: flex; flex-direction: column; gap: 14px; }
+    .muted { color: var(--muted); }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.46); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
+    .modal-backdrop.open { display: flex; }
+    .modal-card { width: min(92vw, 460px); background: var(--app); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-panel); overflow: hidden; }
+    .modal-head { padding: 18px 20px 12px; border-bottom: 1px solid var(--line); background: var(--surface-3); }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--heading); }
+    .modal-subtitle { margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .modal-body { padding: 18px 20px 20px; display: grid; gap: 12px; }
+    .modal-actions { display: grid; gap: 10px; }
+    .modal-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; }
+    .modal-btn:hover { background: var(--surface-2); border-color: var(--line-strong); }
+    .modal-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .modal-btn.primary:hover { filter: brightness(1.03); }
+    .modal-btn small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .modal-btn.primary small { color: rgba(255,255,255,.82); }
+    @media (max-width: 980px) {
+      .quick-actions { display: none; }
+      .menu-btn { display: inline-flex; }
+      .workspace { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .brand-subtitle { display: none; }
+      .field-grid { grid-template-columns: 1fr; }
+      .ribbon { max-height: 320px; }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="app-badge">M</div>
+        <div class="brand">
+          <div class="brand-title">Mike EPUB Editor <span class="brand-version">v1.6.5</span></div>
+          <div class="brand-subtitle">A structured workspace for building real books.</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="quick-actions">
+          <button class="quick-btn primary" id="newProjectBtn" type="button">New</button>
+          <button class="quick-btn" id="undoBtn" type="button">Undo</button>
+          <button class="quick-btn" id="redoBtn" type="button">Redo</button>
+          <label class="file-label" for="openProjectInput">Open Project</label>
+          <button class="quick-btn" id="saveProjectBtn" type="button">Save Project</button>
+          <button class="quick-btn" id="exportEpubTopBtn" type="button">EPUB</button>
+          <button class="quick-btn" id="themeToggleBtn" type="button">Dark Mode</button>
+          <button class="quick-btn" id="fullscreenBtn" type="button">Fullscreen</button>
+        </div>
+        <button class="menu-btn" id="menuToggleBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+        <input id="openProjectInput" type="file" accept=".json,.mee.json" />
+        <input id="coverInput" type="file" accept="image/*" />
+      </div>
+    </header>
+
+    <div class="ribbon-tabs">
+      <button class="ribbon-tab active" type="button" data-tab="home">Home</button>
+      <button class="ribbon-tab" type="button" data-tab="structure">Structure</button>
+      <button class="ribbon-tab" type="button" data-tab="book">Book Details</button>
+      <button class="ribbon-tab" type="button" data-tab="export">Export</button>
+    </div>
+
+    <div class="ribbon" id="ribbon">
+      <div class="ribbon-panel active" data-panel="home">
+        <div class="ribbon-row">
+          <div class="ribbon-group">
+            <div class="ribbon-group-body">
+              <div class="ribbon-stack">
+                <button class="tool-btn wide" id="newProjectRibbonBtn" type="button">New Project</button>
+                <button class="tool-btn wide" id="undoRibbonBtn" type="button">Undo</button>
+                <button class="tool-btn wide" id="redoRibbonBtn" type="button">Redo</button>
+                <button class="tool-btn wide" id="previewVerticalBtn" type="button">Split View</button>
+                <button class="tool-btn wide" id="previewTabBtn" type="button">Preview Tab</button>
+                <button class="tool-btn wide" id="editorTabBtn" type="button">Write Tab</button>
+                <button class="tool-btn wide" id="chapterTitleFromHeadingBtn" type="button">Title from H1</button>
+                <button class="tool-btn wide" id="applyTitleToChapterBtn" type="button">Use Book Title</button>
+                <button class="tool-btn wide" id="refreshNavBtn" type="button">Refresh Outline</button>
+              </div>
+            </div>
+            <div class="ribbon-group-label">Writing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ribbon-panel" data-panel="structure">
+        <div class="ribbon-row">
+          <div class="ribbon-group">
+            <div class="ribbon-group-body">
+              <div class="ribbon-stack">
+                <button class="tool-btn" id="addChapterBtn" type="button">Add</button>
+                <button class="tool-btn" id="duplicateChapterBtn" type="button">Duplicate</button>
+                <button class="tool-btn" id="deleteChapterBtn" type="button">Delete</button>
+                <button class="tool-btn" id="moveChapterUpBtn" type="button">Move Up</button>
+                <button class="tool-btn" id="moveChapterDownBtn" type="button">Move Down</button>
+                <button class="tool-btn" id="renameChapterBtn" type="button">Rename</button>
+              </div>
+            </div>
+            <div class="ribbon-group-label">Chapter Tools</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ribbon-panel" data-panel="book">
+        <div class="ribbon-row">
+          <div class="ribbon-group">
+            <div class="ribbon-group-body">
+              <div class="ribbon-fields">
+                <div class="field-inline wide">
+                  <label for="metaTitle">Title</label>
+                  <input id="metaTitle" type="text" placeholder="Book title" />
+                </div>
+                <div class="field-inline medium">
+                  <label for="metaAuthor">Author</label>
+                  <input id="metaAuthor" type="text" placeholder="Author" />
+                </div>
+                <div class="field-inline narrow">
+                  <label for="metaLanguage">Lang</label>
+                  <input id="metaLanguage" type="text" value="en" placeholder="en" />
+                </div>
+                <div class="field-inline medium">
+                  <label for="metaPublisher">Publisher</label>
+                  <input id="metaPublisher" type="text" placeholder="Publisher" />
+                </div>
+                <div class="field-inline medium">
+                  <label for="bookThemeSelect">Theme</label>
+                  <select id="bookThemeSelect">
+                    <option value="classic">Classic</option>
+                    <option value="modern">Modern</option>
+                    <option value="minimal">Minimal</option>
+                  </select>
+                </div>
+                <div class="field-inline wide">
+                  <label for="metaDescription">Description</label>
+                  <input id="metaDescription" type="text" placeholder="Short EPUB description" />
+                </div>
+                <div class="field-inline medium">
+                  <label>Cover</label>
+                  <div class="row">
+                    <button class="tool-btn wide" id="chooseCoverBtn" type="button">Upload</button>
+                    <button class="tool-btn tiny" id="clearCoverBtn" type="button">Clear</button>
+                    <span class="chip" id="coverMini">No Cover</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ribbon-group-label">Book Details</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ribbon-panel" data-panel="export">
+        <div class="ribbon-row">
+          <div class="ribbon-group">
+            <div class="ribbon-group-body">
+              <div class="ribbon-stack">
+                <button class="tool-btn wide primary" id="exportEpubBtn" type="button">Export EPUB</button>
+                <button class="tool-btn wide" id="exportHtmlBtn" type="button">Export HTML</button>
+                <button class="tool-btn wide" id="validateBtn" type="button">Validate</button>
+                <button class="tool-btn wide" id="saveProjectRibbonBtn" type="button">Save Project</button>
+                <label class="tool-btn wide" for="openProjectInput">Open Project</label>
+                <button class="tool-btn wide" id="focusBookTabBtn" type="button">Book Details</button>
+              </div>
+            </div>
+            <div class="ribbon-group-label">Export</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div>
+            <div class="sidebar-title">Navigator</div>
+            <div class="pane-meta" id="bookMetaSummary">0 sections</div>
+          </div>
+          <button class="sidebar-btn" id="sidebarAddChapterBtn" type="button">+</button>
+        </div>
+        <div class="sidebar-body">
+          <section class="section-card">
+            <div class="section-head">
+              <div class="section-title" id="navigatorSectionTitle">Sections</div>
+              <div class="navigator-toggle">
+                <button class="navigator-toggle-btn active" id="navigatorChaptersBtn" type="button">Sections</button>
+                <button class="navigator-toggle-btn" id="navigatorOutlineBtn" type="button">Outline</button>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="view-panel active" id="chaptersView">
+                <div class="structure-list" id="structureList"></div>
+              </div>
+              <div class="view-panel" id="outlineView">
+                <div class="nav-list" id="navigatorList"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+
+      <section class="mainpane">
+        <div class="pane-header">
+          <div>
+            <div class="pane-title">Writing Workspace</div>
+            <div class="pane-meta" id="editorMeta">Active chapter</div>
+          </div>
+
+        </div>
+        <div class="editor-host">
+          <div id="toastEditor"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="statusbar">
+      <div class="status-group">
+        <span id="wordCount">Words: 0</span>
+        <span id="charCount">Characters: 0</span>
+        <span id="chapterCount">Sections: 0</span>
+        <span id="themeStatus">Theme: Classic</span>
+      </div>
+      <div class="status-group">
+        <span id="saveState">Ready</span>
+        <span id="renderState">Writing workspace ready</span>
+        <span class="kbd">Ctrl</span><span class="kbd">S</span><span>Save project</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="side-drawer" id="sideDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title">Mike EPUB Editor v1.6.5</div>
+      <button class="drawer-btn" id="drawerCloseBtn" type="button">Close</button>
+    </div>
+    <div class="drawer-body">
+      <div class="section-card">
+        <div class="section-head"><div class="section-title">Project File</div></div>
+        <div class="section-body">
+          <button class="drawer-btn primary" id="drawerNewBtn" type="button">New Project</button>
+          <label class="drawer-btn" for="openProjectInput">Open Project</label>
+          <button class="drawer-btn" id="drawerSaveBtn" type="button">Save Project</button>
+          <button class="drawer-btn" id="drawerExportBtn" type="button">Export EPUB</button>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-head"><div class="section-title">Quick Actions</div></div>
+        <div class="section-body">
+          <button class="drawer-btn" id="drawerUndoBtn" type="button">Undo</button>
+          <button class="drawer-btn" id="drawerRedoBtn" type="button">Redo</button>
+          <button class="drawer-btn" id="drawerThemeBtn" type="button">Dark Mode</button>
+          <button class="drawer-btn" id="drawerChooseCoverBtn" type="button">Upload Cover</button>
+          <button class="drawer-btn" id="drawerAddChapterBtn" type="button">Add Chapter</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+
+  <div class="modal-backdrop" id="newProjectModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="newProjectModalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="newProjectModalTitle">Start a new project</div>
+        <div class="modal-subtitle">Choose whether to begin with a blank slate or load the built-in demo book. Either choice will replace the current session.</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-actions">
+          <button class="modal-btn primary" id="newBlankProjectBtn" type="button">
+            <span>Blank Slate<br><small>One empty chapter and fresh metadata</small></span>
+            <span>→</span>
+          </button>
+          <button class="modal-btn" id="newDemoProjectBtn" type="button">
+            <span>Demo File<br><small>Load the sample book with preface, introduction, 5 chapters, and epilogue</small></span>
+            <span>→</span>
+          </button>
+          <button class="modal-btn" id="cancelNewProjectBtn" type="button">
+            <span>Cancel<br><small>Keep the current project exactly as it is</small></span>
+            <span>×</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    marked.setOptions({ breaks: true, gfm: true });
+
+    const STORAGE_KEY = "mee_project_v1_1_toast";
+    const THEME_KEY = "mee_theme_v1_1_toast";
+    const TAB_KEY = "mee_tab_v1_1_toast";
+
+    const els = {
+      ribbon: document.getElementById("ribbon"),
+      ribbonTabs: [...document.querySelectorAll(".ribbon-tab")],
+      ribbonPanels: [...document.querySelectorAll(".ribbon-panel")],
+      structureList: document.getElementById("structureList"),
+      navigatorList: document.getElementById("navigatorList"),
+      navigatorSectionTitle: document.getElementById("navigatorSectionTitle"),
+      navigatorChaptersBtn: document.getElementById("navigatorChaptersBtn"),
+      navigatorOutlineBtn: document.getElementById("navigatorOutlineBtn"),
+      chaptersView: document.getElementById("chaptersView"),
+      outlineView: document.getElementById("outlineView"),
+      metaTitle: document.getElementById("metaTitle"),
+      metaAuthor: document.getElementById("metaAuthor"),
+      metaLanguage: document.getElementById("metaLanguage"),
+      metaPublisher: document.getElementById("metaPublisher"),
+      metaDescription: document.getElementById("metaDescription"),
+      bookThemeSelect: document.getElementById("bookThemeSelect"),
+      coverMini: document.getElementById("coverMini"),
+      coverInput: document.getElementById("coverInput"),
+      openProjectInput: document.getElementById("openProjectInput"),
+      themeToggleBtn: document.getElementById("themeToggleBtn"),
+      fullscreenBtn: document.getElementById("fullscreenBtn"),
+      saveState: document.getElementById("saveState"),
+      renderState: document.getElementById("renderState"),
+      wordCount: document.getElementById("wordCount"),
+      charCount: document.getElementById("charCount"),
+      chapterCount: document.getElementById("chapterCount"),
+      bookMetaSummary: document.getElementById("bookMetaSummary"),
+      editorMeta: document.getElementById("editorMeta"),
+      themeStatus: document.getElementById("themeStatus"),
+      themeChip: document.getElementById("themeChip"),
+      drawerBackdrop: document.getElementById("drawerBackdrop"),
+      sideDrawer: document.getElementById("sideDrawer"),
+      menuToggleBtn: document.getElementById("menuToggleBtn"),
+      newProjectModal: document.getElementById("newProjectModal")
+    };
+
+    const blankProject = () => ({
+      metadata: {
+        title: "Untitled Book",
+        author: "",
+        language: "en",
+        publisher: "",
+        description: "",
+        identifier: crypto.randomUUID ? crypto.randomUUID() : `mee-${Date.now()}`
+      },
+      cover: null,
+      styles: { theme: "classic" },
+      chapters: [
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-1`,
+          title: "Chapter 1",
+          content: `# Chapter 1
+
+Start writing here.
+`
+        }
+      ]
+    });
+
+    const demoProject = () => ({
+      metadata: {
+        title: "Publish, Don’t Perish",
+        author: "Mike EPUB Editor",
+        language: "en",
+        publisher: "MEE Demo Press",
+        description: "An eight-part tutorial book on self-publishing with Mike EPUB Editor, complete with preface, introduction, five core chapters, and an epilogue.",
+        identifier: crypto.randomUUID ? crypto.randomUUID() : `mee-${Date.now()}`
+      },
+      cover: null,
+      styles: { theme: "classic" },
+      chapters: [
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-1`,
+          title: "Preface: Before the Book Begins",
+          content: `# Preface: Before the Book Begins
+
+Welcome to a small book about making a book. It is reassuringly self-referential.
+
+This demo project is designed to do two jobs at once: teach the basics of self-publishing with Mike EPUB Editor, and give you realistic content to test headings, spacing, lists, quotes, navigation, and EPUB export. In other words, it behaves less like filler text and more like a manuscript with somewhere to be.
+
+## Why This Demo Exists
+
+A demo should not merely sit there looking decorative. It should help you understand the rhythm of the tool.
+
+Use this file to see how a book can be laid out from front matter to final pages. Read it, revise it, duplicate it, break it, then put it back together. That is a far healthier relationship with software than fearful tiptoeing.
+
+## What Self-Publishing Actually Is
+
+Self-publishing is not a mysterious ritual performed only by people who have memorised fifteen publishing acronyms before breakfast.
+
+At heart, it is a practical sequence:
+
+- shape the manuscript
+- write and revise it well
+- package it cleanly
+- export it correctly
+- proof it like a reader
+- release it with a straight face
+
+Mike EPUB Editor exists to make those steps simpler, cleaner, and less likely to end in a folder full of files named FINAL_FINAL_REVISED_3.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-2`,
+          title: "Introduction: Start with the Skeleton",
+          content: `# Introduction: Start with the Skeleton
+
+Books do not begin with polish. They begin with structure.
+
+In this editor, structure is visible. That matters. When your chapters, headings, metadata, and cover all live in one coherent workspace, the book becomes easier to think about. A visible skeleton turns a vague manuscript into a manageable object.
+
+## Set the Book Details First
+
+Before you race into Chapter One with the confidence of a person who has not yet met formatting consequences, fill in the metadata.
+
+Add the essentials:
+
+- title
+- author
+- language
+- publisher
+- description
+
+These values are not just decorative labels in the interface. They are packaged into the EPUB and read by apps, devices, and storefront systems. Clean metadata gives your book an identity before a reader sees a single paragraph.
+
+## Think in Parts, Not Just Pages
+
+A proper book often has more than body chapters. Front matter and closing matter help orient the reader and complete the arc.
+
+This demo uses a simple nonfiction pattern:
+
+- Preface
+- Introduction
+- Five core chapters
+- Epilogue
+
+That structure is enough to feel like a real book, but compact enough to study in one sitting.
+
+## Use Headings with Discipline
+
+Each chapter should usually begin with one H1 heading. Subsections can then use H2 and H3 headings.
+
+That hierarchy matters because it improves:
+
+- navigation in the editor
+- navigation in the EPUB
+- readability for humans
+- consistency during export
+
+A heading should not be chosen merely because it “looks big.” That path leads to chaos wearing typography.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-3`,
+          title: "Chapter 1: Draft Like a Publisher",
+          content: `# Chapter 1: Draft Like a Publisher
+
+Drafting for self-publishing is not just about writing attractively. It is about writing cleanly.
+
+Mike EPUB Editor lets you work in Markdown or WYSIWYG mode. Both are valid. Markdown is excellent for speed, structure, and minimal fuss. WYSIWYG is useful when you want a more visual sense of the page. Use the one that helps you move, not the one that makes you feel like you ought to be more sophisticated.
+
+## Write with Semantic Intent
+
+The best export begins with clean source material.
+
+Use:
+
+- headings for hierarchy
+- paragraphs for body text
+- lists for grouped points
+- blockquotes for quoted material
+
+Do not fake structure by making random text bold and hoping it becomes meaningful. EPUB files are polite, but they are not psychic.
+
+> A tidy manuscript is not glamorous, but it is deeply attractive to future-you.
+
+## Draft Forward, Revise Backward
+
+A useful drafting rhythm is simple:
+
+1. write the section to the end
+2. leave obvious flaws in place for now
+3. return and revise with a cooler head
+4. clean the formatting before export
+
+This avoids the trap of editing sentence one seventeen times while sentence two remains a rumour.
+
+## Save Versions Without Drama
+
+Project files preserve your metadata, chapter list, theme state, cover data, and content. Save often, and save with names that make sense.
+
+Examples:
+
+- memoir-v1.mee.json
+- memoir-v2-structural-edits.mee.json
+- memoir-proofed.mee.json
+
+That is far superior to trusting memory, luck, or divine intervention.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-4`,
+          title: "Chapter 2: Structure the Reader’s Journey",
+          content: `# Chapter 2: Structure the Reader’s Journey
+
+A self-published book does not need to be grand, but it does need to be navigable.
+
+Readers do not experience a manuscript as one long emotional blur. They move through it in sections, pauses, and transitions. Good structure helps them feel carried rather than dragged.
+
+## Build Clear Chapters
+
+Each chapter should have a distinct purpose. If two chapters are trying to do the same job, one of them is probably freeloading.
+
+A useful chapter usually contains:
+
+- a clear opening idea
+- a few subsections
+- a logical close
+- a sense of movement
+
+This is true whether you are writing memoir, instruction, essays, or fiction.
+
+## Let the Outline Work for You
+
+Headings are not merely formatting ornaments. They create a navigational map in the editor.
+
+Use the outline to:
+
+- jump quickly between sections
+- spot missing hierarchy
+- notice overlong sections
+- verify that the chapter has internal shape
+
+A flat wall of text is not automatically profound. Quite often it is just exhausting.
+
+## Keep Titles Consistent
+
+Chapter titles should sound like they belong to the same book.
+
+For example, choose one tonal lane:
+
+- plain and direct
+- literary and reflective
+- playful and conversational
+
+Mixing “Chapter 4: Metadata Basics” with “The Whispering Staircase of Destiny” is certainly memorable, but perhaps not in the way you intended.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-5`,
+          title: "Chapter 3: Metadata, Cover, and First Impressions",
+          content: `# Chapter 3: Metadata, Cover, and First Impressions
+
+Before the text gets its chance, the packaging speaks first.
+
+Readers notice the title. Retailers parse the metadata. Reading systems inspect the language and identifier. A cover creates mood before the opening line can defend itself. All of this happens quickly, and none of it is trivial.
+
+## Metadata Is Functional, Not Decorative
+
+Fill in the book details with care.
+
+The title should be stable and intentional. The author name should match how you want to be credited. The language must be correct. The description should say what the book is without wandering off to flirt with abstraction.
+
+Good metadata helps with:
+
+- discoverability
+- cataloguing
+- device display
+- retailer ingestion
+- professional presentation
+
+## Covers Matter More Than Authors Wish
+
+Writers often want to believe the words alone will win. Sometimes they do. Usually, though, the cover gets the first interview.
+
+A practical cover should:
+
+- fit the tone of the book
+- remain legible at small size
+- avoid clutter
+- feel finished rather than improvised
+
+You can upload a cover here so the EPUB has one from the outset. A book without a cover is technically still a book, but it enters the room underdressed.
+
+## Your Book Is a Product and a Piece of Writing
+
+That sentence annoys some artists. It remains true anyway.
+
+Self-publishing means you are both author and production desk. The cleaner your metadata and cover work, the less friction your book will face once it leaves the editor.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-6`,
+          title: "Chapter 4: Export Without Embarrassment",
+          content: `# Chapter 4: Export Without Embarrassment
+
+Export is the moment where private drafting becomes public consequence.
+
+An EPUB is not simply “the text in a file.” It is a package containing content, navigation, metadata, styling, and reading order. When these pieces agree with one another, the book feels smooth. When they do not, the result can look as though it was assembled during a mild electrical storm.
+
+## Prepare for Export
+
+Before exporting, perform a short preflight check:
+
+- chapter titles make sense
+- headings appear in the right order
+- duplicated chapter headings are removed
+- metadata is complete
+- the cover is set if required
+- strange pasted formatting has been cleaned up
+
+A two-minute check can spare you an hour of muttering later.
+
+## Choose the Right Output
+
+Use HTML export when you want a readable handoff or a quick browser version.
+
+Use EPUB export when you want:
+
+- a portable ebook
+- device testing
+- reviewer copies
+- platform uploads
+- a more book-like package
+
+Different reading apps will still style EPUBs slightly differently, because standards are one thing and software personalities are another. The goal is not absolute sameness. The goal is a clean source that travels well.
+
+## Proof the Actual EPUB
+
+Always open the exported file and read it like a reader.
+
+Check:
+
+1. chapter openings
+2. heading spacing
+3. paragraph rhythm
+4. navigation links
+5. image behaviour
+6. line breaks and lists
+
+This is where tiny crimes reveal themselves.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-7`,
+          title: "Chapter 5: Publish, Test, Improve, Repeat",
+          content: `# Chapter 5: Publish, Test, Improve, Repeat
+
+Self-publishing rewards momentum more than fantasy.
+
+At some point the manuscript must stop being a private theory and start becoming a tested object. That means exporting, reviewing, correcting, and repeating until the book is solid enough to stand on its own.
+
+## Think in Iterations
+
+A sensible publishing workflow often looks like this:
+
+1. draft the manuscript
+2. revise for clarity
+3. clean the structure
+4. export the EPUB
+5. proof on real devices or apps
+6. fix what looks wrong
+7. repeat until stable
+
+That is not a sign of failure. It is the process.
+
+## Test Beyond One App
+
+Do not trust a single reading app to define truth for the entire EPUB ecosystem.
+
+If possible, test in more than one environment. A file that reads well in several places is usually in much healthier condition than one blessed by exactly one app on exactly one device.
+
+## Shipping Is Part of Writing
+
+There comes a point where “still polishing” becomes a very refined form of hiding.
+
+Once the structure is sound, the text is proofed, and the EPUB behaves properly, publish the thing. You can always improve the next edition. You cannot improve the edition that never leaves your laptop.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-8`,
+          title: "Epilogue: From Draft to Bookshelf",
+          content: `# Epilogue: From Draft to Bookshelf
+
+And there you are: not merely with a manuscript, but with a shaped, packaged, exportable book.
+
+Self-publishing often looks intimidating from a distance because people imagine one enormous leap. In practice it is a sequence of manageable actions performed with reasonable care. Build the structure. Write the chapters. Revise intelligently. Export cleanly. Proof honestly. Release bravely.
+
+## A Simple Working Rhythm
+
+A practical loop might be:
+
+- create the metadata
+- build the chapter list
+- draft the sections
+- revise the language
+- export the EPUB
+- test the file
+- improve the next pass
+
+There is no need to turn the process into a cathedral of complication.
+
+## Last Word
+
+Mike EPUB Editor is not trying to be every publishing tool in existence. It is trying to be useful.
+
+Use this demo as a tutorial, then replace it with your own work. Keep moving until the book stops being an intention and becomes a file you can actually hand to the world. That is the whole trick.
+`
+        }
+      ]
+    });
+
+    const state = {
+      project: demoProject(),
+      activeChapterIndex: 0,
+      theme: localStorage.getItem(THEME_KEY) || "light",
+      activeRibbonTab: localStorage.getItem(TAB_KEY) || "home",
+      ribbonCollapsed: false,
+      navigatorView: localStorage.getItem("mike_epub_editor_navigator_view") || "chapters"
+    };
+
+    const editor = new toastui.Editor({
+      el: document.getElementById("toastEditor"),
+      height: "100%",
+      initialEditType: "markdown",
+      previewStyle: "vertical",
+      hideModeSwitch: false,
+      usageStatistics: false,
+      initialValue: ""
+    });
+
+    function setStatus(message, kind = "neutral") {
+      els.saveState.textContent = message;
+      els.saveState.style.color = kind === "ok" ? "var(--ok)" : kind === "warn" ? "var(--warn)" : "var(--muted)";
+    }
+
+    function capitalize(value = "") { return value.charAt(0).toUpperCase() + value.slice(1); }
+    function sanitizeFilename(name) { return String(name).trim().replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+/g, " ") || "book"; }
+    function escapeXml(str = "") { return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;"); }
+    function slugify(text = "") { return text.toLowerCase().trim().replace(/<[^>]+>/g, "").replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-") || "section"; }
+
+    function bytesFromDataUrl(dataUrl) {
+      const parts = dataUrl.split(",");
+      const mime = parts[0].match(/data:(.*?);base64/)[1];
+      const binary = atob(parts[1]);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return { mime, bytes };
+    }
+
+    function fileExtensionFromMime(mime) {
+      const map = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "image/svg+xml": "svg" };
+      return map[mime] || "img";
+    }
+
+    function getActiveChapter() { return state.project.chapters[state.activeChapterIndex]; }
+
+    function saveActiveChapterContent() {
+      const chapter = getActiveChapter();
+      if (!chapter) return;
+      chapter.content = editor.getMarkdown();
+    }
+
+    function loadActiveChapterIntoEditor() {
+      const chapter = getActiveChapter();
+      editor.setMarkdown(chapter?.content || "", false);
+      safeRefreshEditor();
+    }
+
+    function syncMetadataFromInputs() {
+      state.project.metadata.title = els.metaTitle.value.trim() || "Untitled Book";
+      state.project.metadata.author = els.metaAuthor.value.trim();
+      state.project.metadata.language = (els.metaLanguage.value.trim() || "en").toLowerCase();
+      state.project.metadata.publisher = els.metaPublisher.value.trim();
+      state.project.metadata.description = els.metaDescription.value.trim();
+      state.project.styles.theme = els.bookThemeSelect.value;
+    }
+
+    function pushMetadataToInputs() {
+      const m = state.project.metadata;
+      els.metaTitle.value = m.title || "";
+      els.metaAuthor.value = m.author || "";
+      els.metaLanguage.value = m.language || "en";
+      els.metaPublisher.value = m.publisher || "";
+      els.metaDescription.value = m.description || "";
+      els.bookThemeSelect.value = state.project.styles.theme || "classic";
+    }
+
+    function updateCoverMini() {
+      if (!state.project.cover?.dataUrl) {
+        els.coverMini.innerHTML = "No Cover";
+        return;
+      }
+      els.coverMini.innerHTML = `<img alt="Cover preview" src="${state.project.cover.dataUrl}">`;
+    }
+
+    function setTheme(theme) {
+      state.theme = theme;
+      document.body.setAttribute("data-theme", theme);
+      localStorage.setItem(THEME_KEY, theme);
+      els.themeToggleBtn.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+      document.getElementById("drawerThemeBtn").textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+      setTimeout(() => editor.refresh && editor.refresh(), 30);
+    }
+
+
+    function setNavigatorView(view) {
+      state.navigatorView = view === "outline" ? "outline" : "chapters";
+      localStorage.setItem("mike_epub_editor_navigator_view", state.navigatorView);
+      const outline = state.navigatorView === "outline";
+      els.chaptersView.classList.toggle("active", !outline);
+      els.outlineView.classList.toggle("active", outline);
+      els.navigatorChaptersBtn.classList.toggle("active", !outline);
+      els.navigatorOutlineBtn.classList.toggle("active", outline);
+      els.navigatorSectionTitle.textContent = outline ? "Book Outline" : "Sections";
+    }
+
+    function setRibbonCollapsed(collapsed) {
+      state.ribbonCollapsed = collapsed;
+      els.ribbon.classList.toggle("collapsed", collapsed);
+    }
+
+    function setRibbonTab(tab) {
+      state.activeRibbonTab = tab;
+      localStorage.setItem(TAB_KEY, tab);
+      els.ribbonTabs.forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      els.ribbonPanels.forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tab));
+      setRibbonCollapsed(false);
+    }
+
+    function toggleRibbonTab(tab) {
+      if (state.activeRibbonTab === tab && !state.ribbonCollapsed) return setRibbonCollapsed(true);
+      if (state.activeRibbonTab === tab && state.ribbonCollapsed) return setRibbonCollapsed(false);
+      setRibbonTab(tab);
+    }
+
+    function extractHeadingsFromMarkdown(md = "") {
+      const headings = [];
+      const seen = new Map();
+      md.split(/\r?\n/).forEach(line => {
+        const match = line.match(/^(#{1,6})\s+(.+)$/);
+        if (!match) return;
+        const level = match[1].length;
+        const text = match[2].trim();
+        const base = slugify(text);
+        const count = seen.get(base) || 0;
+        const id = count ? `${base}-${count + 1}` : base;
+        seen.set(base, count + 1);
+        headings.push({ level, text, id });
+      });
+      return headings;
+    }
+
+    function updateStructureList() {
+      els.structureList.innerHTML = "";
+      state.project.chapters.forEach((chapter, index) => {
+        const words = (chapter.content.match(/\S+/g) || []).length;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `structure-item${index === state.activeChapterIndex ? " active" : ""}`;
+        btn.innerHTML = `<div class="structure-name">${escapeXml(chapter.title || `Chapter ${index + 1}`)}</div><div class="structure-meta">${words} words</div>`;
+        btn.addEventListener("click", () => switchChapter(index));
+        els.structureList.appendChild(btn);
+      });
+    }
+
+    function buildNavigatorItems() {
+      return state.project.chapters.map((chapter, index) => ({
+        type: "section",
+        chapterIndex: index,
+        label: chapter.title || `Section ${index + 1}`,
+        headings: extractHeadingsFromMarkdown(chapter.content || "").map(item => ({
+          type: "heading",
+          chapterIndex: index,
+          label: item.text,
+          level: item.level,
+          headingText: item.text
+        }))
+      }));
+    }
+
+    function jumpToNavigatorItem(item) {
+      const targetIndex = typeof item.chapterIndex === "number" ? item.chapterIndex : state.activeChapterIndex;
+      if (targetIndex !== state.activeChapterIndex) {
+        switchChapter(targetIndex, false);
+      }
+      if (item.type === "heading" && item.headingText) {
+        try {
+          const markdown = editor.getMarkdown();
+          const headingLine = markdown.split(/\r?\n/).findIndex(line => {
+            return line.replace(/^#{1,6}\s+/, "").trim() === item.headingText.trim();
+          });
+          if (headingLine >= 0 && editor.moveCursorToStart) {
+            editor.moveCursorToStart();
+            if (editor.setSelection) editor.setSelection([headingLine + 1, 1], [headingLine + 1, 1]);
+          }
+        } catch {}
+        setStatus(`Jumped to ${item.headingText}`, "ok");
+        return;
+      }
+      setStatus(`Jumped to ${getActiveChapter().title}`, "ok");
+    }
+
+    function renderNavigator() {
+      const items = buildNavigatorItems();
+      const outlineMode = state.navigatorView === "outline";
+      if (!outlineMode) return;
+      els.navigatorList.innerHTML = "";
+      let totalHeadings = 0;
+      items.forEach((section, sectionIndex) => {
+        const wrap = document.createElement("div");
+        const sectionBtn = document.createElement("button");
+        sectionBtn.type = "button";
+        sectionBtn.className = `nav-link chapter${sectionIndex === state.activeChapterIndex ? " active" : ""}`;
+        sectionBtn.textContent = section.label;
+        sectionBtn.addEventListener("click", () => jumpToNavigatorItem({ type: "section", chapterIndex: sectionIndex, label: section.label }));
+        wrap.appendChild(sectionBtn);
+
+        const subheadings = section.headings.filter(item => item.level > 1);
+        if (subheadings.length) {
+          subheadings.forEach((heading) => {
+            totalHeadings += 1;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "nav-link heading";
+            btn.textContent = heading.label;
+            btn.style.marginLeft = `${12 + Math.max(0, heading.level - 2) * 12}px`;
+            btn.addEventListener("click", () => jumpToNavigatorItem(heading));
+            wrap.appendChild(btn);
+          });
+        } else {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.style.padding = "0.2rem 0 0.4rem 1rem";
+          empty.textContent = "No subheadings yet";
+          wrap.appendChild(empty);
+        }
+        els.navigatorList.appendChild(wrap);
+      });
+      if (!items.length) {
+        els.navigatorList.innerHTML = `<div class="muted">No sections yet.</div>`;
+      } else if (!totalHeadings) {
+        els.navigatorList.insertAdjacentHTML("afterbegin", `<div class="muted" style="margin-bottom:0.5rem;">Outline is showing the whole book, but no section has H2 or H3 headings yet.</div>`);
+      }
+    }
+
+    function updateStats() {
+      const chapter = getActiveChapter();
+      const markdown = chapter?.content || "";
+      const words = (markdown.match(/\S+/g) || []).length;
+      const chars = markdown.length;
+      const sectionCount = state.project.chapters.length;
+      els.wordCount.textContent = `Words: ${words}`;
+      els.charCount.textContent = `Characters: ${chars}`;
+      els.chapterCount.textContent = `Sections: ${sectionCount}`;
+      els.bookMetaSummary.textContent = `${sectionCount} sections`;
+      els.editorMeta.textContent = chapter?.title || "Active section";
+    }
+
+    function touchProject(message = "Saved locally") {
+      saveActiveChapterContent();
+      syncMetadataFromInputs();
+      updateStructureList();
+      updateStats();
+      renderNavigator();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.project));
+      } catch (error) {
+        console.warn("Autosave failed", error);
+      }
+      setStatus(message, "ok");
+    }
+
+
+    function switchChapter(index, announce = true) {
+      saveActiveChapterContent();
+      state.activeChapterIndex = index;
+      loadActiveChapterIntoEditor();
+      updateStructureList();
+      updateStats();
+      renderNavigator();
+      if (announce) setStatus(`Switched to ${getActiveChapter().title}`, "ok");
+    }
+
+    function addChapter() {
+      saveActiveChapterContent();
+      const number = state.project.chapters.length + 1;
+      state.project.chapters.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-${number}`,
+        title: `Chapter ${number}`,
+        content: `# Chapter ${number}\n\nStart writing here.\n`
+      });
+      state.activeChapterIndex = state.project.chapters.length - 1;
+      loadActiveChapterIntoEditor();
+      touchProject(`Added Chapter ${number}`);
+    }
+
+    function duplicateChapter() {
+      saveActiveChapterContent();
+      const current = getActiveChapter();
+      const copy = { ...current, id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}`, title: `${current.title} Copy` };
+      state.project.chapters.splice(state.activeChapterIndex + 1, 0, copy);
+      state.activeChapterIndex += 1;
+      loadActiveChapterIntoEditor();
+      touchProject(`Duplicated ${current.title}`);
+    }
+
+    function deleteChapter() {
+      if (state.project.chapters.length <= 1) return setStatus("At least one chapter is required", "warn");
+      const current = getActiveChapter();
+      if (!confirm(`Delete ${current.title}?`)) return;
+      state.project.chapters.splice(state.activeChapterIndex, 1);
+      state.activeChapterIndex = Math.max(0, state.activeChapterIndex - 1);
+      loadActiveChapterIntoEditor();
+      touchProject(`Deleted ${current.title}`);
+    }
+
+    function moveChapter(direction) {
+      const from = state.activeChapterIndex;
+      const to = from + direction;
+      if (to < 0 || to >= state.project.chapters.length) return;
+      saveActiveChapterContent();
+      const [chapter] = state.project.chapters.splice(from, 1);
+      state.project.chapters.splice(to, 0, chapter);
+      state.activeChapterIndex = to;
+      touchProject(`Moved ${chapter.title}`);
+    }
+
+    function renameChapter() {
+      const current = getActiveChapter();
+      const next = prompt("Rename chapter", current.title);
+      if (!next) return;
+      current.title = next.trim() || current.title;
+      touchProject(`Renamed to ${current.title}`);
+    }
+
+    function pullChapterTitleFromH1() {
+      saveActiveChapterContent();
+      const current = getActiveChapter();
+      const firstHeading = (current.content.match(/^#\s+(.+)$/m) || [])[1];
+      if (!firstHeading) return setStatus("No H1 found in this chapter", "warn");
+      current.title = firstHeading.trim();
+      touchProject(`Chapter renamed to ${current.title}`);
+    }
+
+    function applyBookTitleToChapter() {
+      getActiveChapter().title = state.project.metadata.title || getActiveChapter().title;
+      touchProject(`Applied book title to chapter`);
+    }
+
+    function chooseCover() { els.coverInput.click(); }
+    function clearCover() { state.project.cover = null; updateCoverMini(); touchProject("Cover cleared"); }
+
+    function openNewProjectModal() {
+      els.newProjectModal.classList.add("open");
+      els.newProjectModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeNewProjectModal() {
+      els.newProjectModal.classList.remove("open");
+      els.newProjectModal.setAttribute("aria-hidden", "true");
+    }
+
+    function startProject(kind) {
+      const label = kind === "blank" ? "blank slate" : "demo project";
+      if (!confirm(`Start a new ${label}? Unsaved changes in the current session will be replaced.`)) return;
+      state.project = kind === "blank" ? blankProject() : demoProject();
+      state.activeChapterIndex = 0;
+      pushMetadataToInputs();
+      updateCoverMini();
+      loadActiveChapterIntoEditor();
+      touchProject(kind === "blank" ? "Blank project ready" : "Demo project loaded");
+      closeNewProjectModal();
+    }
+
+    function newProject() {
+      openNewProjectModal();
+    }
+
+    function syncEditorUi(message) {
+      saveActiveChapterContent();
+      updateStats();
+      renderNavigator();
+      setStatus(message, "ok");
+    }
+
+    function undoEdit() {
+      try {
+        editor.exec("undo");
+        syncEditorUi("Undid last change");
+      } catch (error) {
+        console.error(error);
+        setStatus("Undo is not available right now", "warn");
+      }
+    }
+
+    function redoEdit() {
+      try {
+        editor.exec("redo");
+        syncEditorUi("Redid last change");
+      } catch (error) {
+        console.error(error);
+        setStatus("Redo is not available right now", "warn");
+      }
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function saveProjectFile() {
+      touchProject("Project saved locally");
+      const json = JSON.stringify(state.project, null, 2);
+      downloadBlob(new Blob([json], { type: "application/json;charset=utf-8" }), sanitizeFilename(state.project.metadata.title || "book") + ".mee.json");
+      setStatus("Project saved", "ok");
+    }
+
+    function openProjectFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!parsed || !Array.isArray(parsed.chapters) || !parsed.metadata) throw new Error("Not a valid MEE project file.");
+          state.project = parsed;
+          if (!state.project.styles) state.project.styles = { theme: "classic" };
+          if (!state.project.metadata.identifier) state.project.metadata.identifier = crypto.randomUUID ? crypto.randomUUID() : `mee-${Date.now()}`;
+          state.activeChapterIndex = 0;
+          pushMetadataToInputs();
+          updateCoverMini();
+          loadActiveChapterIntoEditor();
+          touchProject("Project loaded");
+        } catch (error) {
+          alert(`Could not open project.\n\n${error.message}`);
+          setStatus("Project open failed", "warn");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function buildCss(themeName) {
+      const base = `html, body { margin: 0; padding: 0; }
+body { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; }
+body, p, li, blockquote, td, th { orphans: 2; widows: 2; }
+.chapter { padding: 0 0 0.4rem; }
+.chapter-title { margin: 0 0 1.25rem; page-break-after: avoid; break-after: avoid-page; }
+h1, h2, h3, h4, h5, h6 { page-break-after: avoid; break-after: avoid-page; line-height: 1.25; margin: 1.4em 0 0.55em; }
+h1:first-child, h2:first-child, h3:first-child { margin-top: 0; }
+p, ul, ol, dl, blockquote, pre, table, hr { margin: 0 0 1em; }
+ul, ol { padding-left: 1.35em; }
+li + li { margin-top: 0.25em; }
+blockquote { page-break-inside: avoid; }
+pre, code { white-space: pre-wrap; word-break: break-word; }
+pre { overflow-wrap: anywhere; }
+img, svg { display: block; max-width: 100%; height: auto; margin: 1em auto; page-break-inside: avoid; break-inside: avoid; }
+a { color: inherit; text-decoration: none; }
+hr { border: 0; border-top: 1px solid #cfcfcf; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+th, td { vertical-align: top; }
+.nav { padding: 0; }
+.nav h1 { margin-bottom: 1rem; }
+.nav ol { padding-left: 1.2em; }
+.nav li { margin: 0 0 0.45em; }
+.cover-page { margin: 0; padding: 0; }
+.cover-page img { margin: 0 auto; max-height: 100vh; width: auto; }
+.pagebreak { break-before: page; page-break-before: always; }`;
+      if (themeName === "modern") return `${base}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.72; color: #1f2732; padding: 5%; }
+h1,h2,h3,h4,h5,h6 { color:#0f141a; letter-spacing:-0.02em; font-weight: 700; }
+.chapter-title { font-size: 2.05em; border-bottom: 1px solid #d8dde6; padding-bottom: 0.28em; }
+h2 { font-size:1.55em; }
+h3 { font-size:1.25em; }
+blockquote { padding:0.8em 1em; border-left:4px solid #2563eb; background:#f6f9ff; }
+code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; }
+pre { background:#1f2530; color:#f4f7fb; padding:1em; border-radius:10px; }
+th, td { border:1px solid #d8dde6; padding:0.65em 0.8em; text-align:left; }`;
+      if (themeName === "minimal") return `${base}
+body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.78; color: #202020; padding: 6% 7%; }
+h1,h2,h3,h4,h5,h6 { font-weight:600; color:#111; }
+.chapter-title { font-size:2em; }
+h2 { font-size:1.45em; }
+blockquote { padding-left:1em; border-left:3px solid #999; color:#444; }
+code, pre { font-family: 'Courier New', monospace; }
+pre { background:#f3f3f3; color:#111; padding:1em; }
+th, td { border:1px solid #bbb; padding:0.6em 0.75em; text-align:left; }`;
+      return `${base}
+body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.74; color: #222; padding: 6% 7%; }
+h1,h2,h3,h4,h5,h6 { color:#111; }
+.chapter-title { font-size:2em; border-bottom:1px solid #cfcfcf; padding-bottom:0.25em; }
+h2 { font-size:1.5em; border-bottom:1px solid #e2e2e2; padding-bottom:0.15em; }
+blockquote { padding:0.8em 1em; border-left:4px solid #666; background:#f6f6f6; }
+code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; }
+pre { background:#f5f5f5; padding:1em; border-radius:8px; }
+th, td { border:1px solid #cfcfcf; padding:0.65em 0.8em; text-align:left; }`;
+    }
+
+    function renderMarkdown(md) {
+      const raw = marked.parse(md || "");
+      return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
+    }
+
+    function stripLeadingH1(md = "") {
+      return String(md).replace(/^\s*#\s+.+?(?:\r?\n|$)+/, "");
+    }
+
+    function chapterToXhtml(chapter, index) {
+      const title = chapter.title || `Chapter ${index + 1}`;
+      const cleanedMarkdown = stripLeadingH1(chapter.content || "");
+      const html = renderMarkdown(cleanedMarkdown);
+      return `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${escapeXml(state.project.metadata.language || "en")}">
+<head>
+  <title>${escapeXml(title)}</title>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body epub:type="bodymatter">
+  <article class="chapter" epub:type="chapter">
+    <h1 class="chapter-title">${escapeXml(title)}</h1>
+    ${html}
+  </article>
+</body>
+</html>`;
+    }
+
+    async function exportEpub() {
+      try {
+        touchProject("Preparing EPUB");
+        const zip = new JSZip();
+        zip.file("mimetype", "application/epub+zip", { compression: "STORE" });
+        zip.folder("META-INF").file("container.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n  <rootfiles>\n    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>\n  </rootfiles>\n</container>`);
+        const oebps = zip.folder("OEBPS");
+        oebps.file("styles.css", buildCss(state.project.styles.theme));
+
+        let coverMeta = "";
+        let coverManifest = "";
+        let coverSpine = "";
+        let coverNavEntry = "";
+        if (state.project.cover?.dataUrl) {
+          const { mime, bytes } = bytesFromDataUrl(state.project.cover.dataUrl);
+          const ext = fileExtensionFromMime(mime);
+          const coverName = `cover.${ext}`;
+          oebps.file(coverName, bytes, { binary: true });
+          oebps.file("cover.xhtml", `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head><title>Cover</title><meta charset="utf-8" /></head>\n<body><section epub:type="cover" class="cover-page"><img src="${coverName}" alt="Cover" /></section></body>\n</html>`);
+          coverMeta = `<meta name="cover" content="cover-image"/>`;
+          coverManifest = `<item id="cover-image" href="${coverName}" media-type="${mime}"/>\n    <item id="cover-page" href="cover.xhtml" media-type="application/xhtml+xml"/>`;
+          coverSpine = `<itemref idref="cover-page"/>`;
+          coverNavEntry = `<li><a href="cover.xhtml">Cover</a></li>`;
+        }
+
+        const chapterItems = state.project.chapters.map((chapter, index) => {
+          const fileName = `chapter${index + 1}.xhtml`;
+          oebps.file(fileName, chapterToXhtml(chapter, index));
+          return { id: `chapter-${index + 1}`, href: fileName, title: chapter.title || `Chapter ${index + 1}` };
+        });
+
+        oebps.file("nav.xhtml", `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head><title>Table of Contents</title><meta charset="utf-8" /></head>\n<body><nav epub:type="toc" id="toc" class="nav"><h1>Contents</h1><ol>${coverNavEntry}${chapterItems.map(item => `<li><a href="${item.href}">${escapeXml(item.title)}</a></li>`).join("")}</ol></nav></body>\n</html>`);
+
+        const modified = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+        oebps.file("content.opf", `<?xml version="1.0" encoding="utf-8"?>\n<package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="pub-id">\n  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n    <dc:identifier id="pub-id">${escapeXml(state.project.metadata.identifier)}</dc:identifier>\n    <dc:title>${escapeXml(state.project.metadata.title || "Untitled Book")}</dc:title>\n    <dc:language>${escapeXml(state.project.metadata.language || "en")}</dc:language>\n    <dc:creator>${escapeXml(state.project.metadata.author || "Unknown")}</dc:creator>\n    ${state.project.metadata.publisher ? `<dc:publisher>${escapeXml(state.project.metadata.publisher)}</dc:publisher>` : ""}\n    ${state.project.metadata.description ? `<dc:description>${escapeXml(state.project.metadata.description)}</dc:description>` : ""}\n    <meta property="dcterms:modified">${modified}</meta>\n    ${coverMeta}\n  </metadata>\n  <manifest>\n    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n    <item id="css" href="styles.css" media-type="text/css"/>\n    ${coverManifest}\n    ${chapterItems.map(item => `<item id="${item.id}" href="${item.href}" media-type="application/xhtml+xml"/>`).join("\n    ")}\n  </manifest>\n  <spine>\n    ${coverSpine}\n    ${chapterItems.map(item => `<itemref idref="${item.id}"/>`).join("\n    ")}\n  </spine>\n</package>`);
+
+        const blob = await zip.generateAsync({ type: "blob", mimeType: "application/epub+zip", compression: "DEFLATE", compressionOptions: { level: 9 } });
+        downloadBlob(blob, sanitizeFilename(state.project.metadata.title || "book") + ".epub");
+        setStatus("EPUB exported", "ok");
+      } catch (error) {
+        console.error(error);
+        setStatus("EPUB export failed", "warn");
+        alert(`EPUB export failed:\n\n${error.message}`);
+      }
+    }
+
+    function exportHtmlBundle() {
+      touchProject("Preparing HTML");
+      const html = `<!DOCTYPE html>\n<html lang="${escapeXml(state.project.metadata.language || "en")}">\n<head>\n<meta charset="utf-8">\n<title>${escapeXml(state.project.metadata.title || "Untitled Book")}</title>\n<style>${buildCss(state.project.styles.theme)}</style>\n</head>\n<body>\n<h1>${escapeXml(state.project.metadata.title || "Untitled Book")}</h1>\n${state.project.metadata.author ? `<p><strong>${escapeXml(state.project.metadata.author)}</strong></p>` : ""}\n${state.project.chapters.map((chapter, index) => `<section><h2>${escapeXml(chapter.title || `Chapter ${index + 1}`)}</h2>${renderMarkdown(chapter.content || "")}</section>`).join("\n<hr>\n")}\n</body>\n</html>`;
+      downloadBlob(new Blob([html], { type: "text/html;charset=utf-8" }), sanitizeFilename(state.project.metadata.title || "book") + ".html");
+      setStatus("HTML exported", "ok");
+    }
+
+    function validateProject() {
+      touchProject("Validating project");
+      const issues = [];
+      if (!state.project.metadata.title?.trim()) issues.push("Book title is missing.");
+      if (!state.project.metadata.author?.trim()) issues.push("Author is missing.");
+      if (!state.project.metadata.language?.trim()) issues.push("Language is missing.");
+      state.project.chapters.forEach((chapter, index) => {
+        if (!chapter.title?.trim()) issues.push(`Chapter ${index + 1} has no title.`);
+        if (!chapter.content?.trim()) issues.push(`Chapter ${index + 1} is empty.`);
+      });
+      if (!issues.length) {
+        setStatus("Validation passed", "ok");
+        alert("Validation passed.\n\nThis is a basic structural check, not full epubcheck validation.");
+      } else {
+        setStatus("Validation found issues", "warn");
+        alert(`Validation issues:\n\n- ${issues.join("\n- ")}`);
+      }
+    }
+
+    function openDrawer() {
+      els.sideDrawer.classList.add("open");
+      els.drawerBackdrop.classList.add("open");
+      document.body.classList.add("drawer-open");
+      els.sideDrawer.setAttribute("aria-hidden", "false");
+      els.menuToggleBtn.setAttribute("aria-expanded", "true");
+    }
+    function closeDrawer() {
+      els.sideDrawer.classList.remove("open");
+      els.drawerBackdrop.classList.remove("open");
+      document.body.classList.remove("drawer-open");
+      els.sideDrawer.setAttribute("aria-hidden", "true");
+      els.menuToggleBtn.setAttribute("aria-expanded", "false");
+    }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+
+    function safeRefreshEditor() {
+      setTimeout(() => {
+        try { editor.refresh && editor.refresh(); } catch {}
+        try { window.dispatchEvent(new Event("resize")); } catch {}
+      }, 30);
+    }
+
+    function setEditorMode(mode) {
+      try { editor.changeMode(mode, true); } catch {}
+      safeRefreshEditor();
+      setStatus(`Switched to ${mode} mode`, "ok");
+    }
+
+    function setPreviewStyle(style) {
+      try { editor.changePreviewStyle(style); } catch {}
+      safeRefreshEditor();
+      els.renderState.textContent = style === "vertical" ? "Toast UI split preview" : "Toast UI tab preview";
+      setStatus(style === "vertical" ? "Split view enabled" : "Preview tab enabled", "ok");
+    }
+
+    function loadFromLocalStorage() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed?.chapters?.length) state.project = parsed;
+        } catch {}
+      }
+      if (!state.project.styles) state.project.styles = { theme: "classic" };
+      pushMetadataToInputs();
+      updateCoverMini();
+      loadActiveChapterIntoEditor();
+      updateStructureList();
+      updateStats();
+      renderNavigator();
+      setNavigatorView(state.navigatorView);
+      setTheme(state.theme);
+      setRibbonTab(state.activeRibbonTab);
+      setRibbonCollapsed(false);
+      safeRefreshEditor();
+    }
+
+    editor.on("change", () => {
+      saveActiveChapterContent();
+      updateStructureList();
+      updateStats();
+      renderNavigator();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.project));
+      setStatus("Saved locally", "ok");
+    });
+
+    els.ribbonTabs.forEach(btn => btn.addEventListener("click", () => toggleRibbonTab(btn.dataset.tab)));
+    [els.metaTitle, els.metaAuthor, els.metaLanguage, els.metaPublisher, els.metaDescription, els.bookThemeSelect].forEach(input => {
+      input.addEventListener("input", () => touchProject("Book details updated"));
+      input.addEventListener("change", () => touchProject("Book details updated"));
+    });
+
+    els.coverInput.addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.project.cover = { dataUrl: reader.result, name: file.name };
+        updateCoverMini();
+        touchProject("Cover loaded");
+      };
+      reader.readAsDataURL(file);
+      event.target.value = "";
+    });
+
+    els.openProjectInput.addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (file) openProjectFile(file);
+      event.target.value = "";
+    });
+
+    document.getElementById("newProjectBtn").addEventListener("click", newProject);
+    document.getElementById("newProjectRibbonBtn").addEventListener("click", newProject);
+    document.getElementById("undoBtn").addEventListener("click", undoEdit);
+    document.getElementById("redoBtn").addEventListener("click", redoEdit);
+    document.getElementById("undoRibbonBtn").addEventListener("click", undoEdit);
+    document.getElementById("redoRibbonBtn").addEventListener("click", redoEdit);
+    document.getElementById("drawerUndoBtn").addEventListener("click", () => { undoEdit(); closeDrawer(); });
+    document.getElementById("drawerRedoBtn").addEventListener("click", () => { redoEdit(); closeDrawer(); });
+    document.getElementById("newBlankProjectBtn").addEventListener("click", () => startProject("blank"));
+    document.getElementById("newDemoProjectBtn").addEventListener("click", () => startProject("demo"));
+    document.getElementById("cancelNewProjectBtn").addEventListener("click", closeNewProjectModal);
+    els.newProjectModal.addEventListener("click", (event) => {
+      if (event.target === els.newProjectModal) closeNewProjectModal();
+    });
+    document.getElementById("saveProjectBtn").addEventListener("click", saveProjectFile);
+    document.getElementById("saveProjectRibbonBtn").addEventListener("click", saveProjectFile);
+    document.getElementById("exportEpubTopBtn").addEventListener("click", exportEpub);
+    document.getElementById("exportEpubBtn").addEventListener("click", exportEpub);
+    document.getElementById("exportHtmlBtn").addEventListener("click", exportHtmlBundle);
+    document.getElementById("validateBtn").addEventListener("click", validateProject);
+    document.getElementById("focusBookTabBtn").addEventListener("click", () => setRibbonTab("book"));
+    document.getElementById("themeToggleBtn").addEventListener("click", () => setTheme(state.theme === "dark" ? "light" : "dark"));
+    document.getElementById("drawerThemeBtn").addEventListener("click", () => setTheme(state.theme === "dark" ? "light" : "dark"));
+    document.getElementById("fullscreenBtn").addEventListener("click", toggleFullscreen);
+    document.getElementById("menuToggleBtn").addEventListener("click", openDrawer);
+    document.getElementById("drawerCloseBtn").addEventListener("click", closeDrawer);
+    document.getElementById("drawerBackdrop").addEventListener("click", closeDrawer);
+
+    document.getElementById("addChapterBtn").addEventListener("click", addChapter);
+    document.getElementById("sidebarAddChapterBtn").addEventListener("click", addChapter);
+    document.getElementById("drawerAddChapterBtn").addEventListener("click", () => { addChapter(); closeDrawer(); });
+    document.getElementById("duplicateChapterBtn").addEventListener("click", duplicateChapter);
+    document.getElementById("deleteChapterBtn").addEventListener("click", deleteChapter);
+    document.getElementById("moveChapterUpBtn").addEventListener("click", () => moveChapter(-1));
+    document.getElementById("moveChapterDownBtn").addEventListener("click", () => moveChapter(1));
+    document.getElementById("renameChapterBtn").addEventListener("click", renameChapter);
+    document.getElementById("chapterTitleFromHeadingBtn").addEventListener("click", pullChapterTitleFromH1);
+    document.getElementById("applyTitleToChapterBtn").addEventListener("click", applyBookTitleToChapter);
+    document.getElementById("refreshNavBtn").addEventListener("click", () => { renderNavigator(); setStatus("Outline refreshed", "ok"); });
+    document.getElementById("navigatorChaptersBtn").addEventListener("click", () => setNavigatorView("chapters"));
+    document.getElementById("navigatorOutlineBtn").addEventListener("click", () => { setNavigatorView("outline"); renderNavigator(); });
+
+    document.getElementById("chooseCoverBtn").addEventListener("click", chooseCover);
+    document.getElementById("drawerChooseCoverBtn").addEventListener("click", () => { chooseCover(); closeDrawer(); });
+    document.getElementById("clearCoverBtn").addEventListener("click", clearCover);
+
+    document.getElementById("previewVerticalBtn").addEventListener("click", () => setPreviewStyle("vertical"));
+    document.getElementById("previewTabBtn").addEventListener("click", () => { setEditorMode("markdown"); setPreviewStyle("tab"); });
+    document.getElementById("editorTabBtn").addEventListener("click", () => setEditorMode("wysiwyg"));
+
+    document.getElementById("drawerNewBtn").addEventListener("click", () => { newProject(); closeDrawer(); });
+    document.getElementById("drawerSaveBtn").addEventListener("click", () => { saveProjectFile(); closeDrawer(); });
+    document.getElementById("drawerExportBtn").addEventListener("click", () => { exportEpub(); closeDrawer(); });
+
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        saveProjectFile();
+      }
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        undoEdit();
+      }
+      if ((event.ctrlKey || event.metaKey) && ((event.shiftKey && event.key.toLowerCase() === "z") || event.key.toLowerCase() === "y")) {
+        event.preventDefault();
+        redoEdit();
+      }
+      if (event.key === "Escape" && els.newProjectModal.classList.contains("open")) {
+        closeNewProjectModal();
+      }
+    });
+
+    window.addEventListener("resize", safeRefreshEditor);
+    window.addEventListener("load", safeRefreshEditor);
+
+    loadFromLocalStorage();
+  </script>
+</body>
+</html>
