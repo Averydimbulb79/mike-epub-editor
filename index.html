@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mike EPUB Editor v1.5</title>
-  <meta name="generator" content="Mike EPUB Editor v1.5" />
+  <title>Mike EPUB Editor v1.6.5</title>
+  <meta name="generator" content="Mike EPUB Editor v1.6.5" />
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js"></script>
@@ -81,15 +81,14 @@
     .sidebar-header, .pane-header { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--surface-3); }
     .sidebar-title, .pane-title { font-size: 12px; font-weight: 800; color: var(--heading); text-transform: uppercase; letter-spacing: .04em; }
     .pane-meta { font-size: 12px; color: var(--muted); }
-    .sidebar-body { min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
-    .sidebar .section-card { flex: 0 0 auto; }
+    .sidebar-body { min-height: 0; overflow: hidden; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .sidebar .section-card { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     .section-card { border: 1px solid var(--line); background: linear-gradient(180deg,var(--surface) 0%,var(--panel) 100%); border-radius: 14px; overflow: hidden; }
     .section-head { padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-3); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .section-title { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-    .section-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .structure-list, .nav-list { display: flex; flex-direction: column; gap: 6px; min-height: 0; overflow: auto; }
-    .structure-list { max-height: 32vh; }
-    .nav-list { max-height: calc(100dvh - 310px); }
+    .section-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-height: 0; }
+    .structure-list, .nav-list { display: flex; flex-direction: column; gap: 6px; min-height: 0; overflow: auto; flex: 1 1 auto; }
+    .structure-list, .nav-list { max-height: none; }
     .structure-item, .nav-link { display: block; width: 100%; text-align: left; text-decoration: none; border-radius: 10px; padding: 9px 10px; cursor: pointer; }
     .structure-item.active, .nav-link.active { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: var(--accent-soft); }
     .structure-name { font-weight: 700; color: var(--heading); }
@@ -102,6 +101,11 @@
     .nav-link.chapter { font-weight: 700; padding: 0; border: none; background: transparent; }
     .nav-outline-headings { display: flex; flex-direction: column; gap: 2px; padding: 0 6px 6px 34px; }
     .nav-link.heading { font-size: 12px; color: var(--muted); padding: 5px 8px; }
+    .navigator-toggle { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+    .navigator-toggle-btn { min-width: 76px; height: 28px; padding: 0 10px; border-radius: 999px; border: none; background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; }
+    .navigator-toggle-btn.active { background: var(--accent-soft); color: var(--accent); }
+    .view-panel { display: none; min-height: 0; flex: 1 1 auto; }
+    .view-panel.active { display: flex; flex-direction: column; }
     .mainpane { background: var(--surface); }
     .editor-host { min-height: 0; padding: 12px; background: var(--bg); flex: 1 1 auto; overflow: hidden; }
     #toastEditor { height: 100%; min-height: 420px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-soft); }
@@ -209,7 +213,7 @@
       <div class="topbar-left">
         <div class="app-badge">M</div>
         <div class="brand">
-          <div class="brand-title">Mike EPUB Editor</div>
+          <div class="brand-title">Mike EPUB Editor <span class="brand-version">v1.6.5</span></div>
           <div class="brand-subtitle">A structured workspace for building real books.</div>
         </div>
       </div>
@@ -348,29 +352,27 @@
       <aside class="sidebar">
         <div class="sidebar-header">
           <div>
-            <div class="sidebar-title">Book Navigator</div>
-            <div class="pane-meta" id="bookMetaSummary">0 chapters</div>
+            <div class="sidebar-title">Navigator</div>
+            <div class="pane-meta" id="bookMetaSummary">0 sections</div>
           </div>
           <button class="sidebar-btn" id="sidebarAddChapterBtn" type="button">+</button>
         </div>
         <div class="sidebar-body">
           <section class="section-card">
             <div class="section-head">
-              <div class="section-title">Chapter List</div>
-              <span class="chip" id="themeChip">Classic</span>
+              <div class="section-title" id="navigatorSectionTitle">Sections</div>
+              <div class="navigator-toggle">
+                <button class="navigator-toggle-btn active" id="navigatorChaptersBtn" type="button">Sections</button>
+                <button class="navigator-toggle-btn" id="navigatorOutlineBtn" type="button">Outline</button>
+              </div>
             </div>
             <div class="section-body">
-              <div class="structure-list" id="structureList"></div>
-            </div>
-          </section>
-
-          <section class="section-card">
-            <div class="section-head">
-              <div class="section-title">Outline</div>
-              <span class="chip" id="navigatorModeChip">Book Details</span>
-            </div>
-            <div class="section-body">
-              <div class="nav-list" id="navigatorList"></div>
+              <div class="view-panel active" id="chaptersView">
+                <div class="structure-list" id="structureList"></div>
+              </div>
+              <div class="view-panel" id="outlineView">
+                <div class="nav-list" id="navigatorList"></div>
+              </div>
             </div>
           </section>
         </div>
@@ -394,7 +396,7 @@
       <div class="status-group">
         <span id="wordCount">Words: 0</span>
         <span id="charCount">Characters: 0</span>
-        <span id="chapterCount">Chapters: 0</span>
+        <span id="chapterCount">Sections: 0</span>
         <span id="themeStatus">Theme: Classic</span>
       </div>
       <div class="status-group">
@@ -408,7 +410,7 @@
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
   <aside class="side-drawer" id="sideDrawer" aria-hidden="true">
     <div class="drawer-header">
-      <div class="drawer-title">Mike EPUB Editor</div>
+      <div class="drawer-title">Mike EPUB Editor v1.6.5</div>
       <button class="drawer-btn" id="drawerCloseBtn" type="button">Close</button>
     </div>
     <div class="drawer-body">
@@ -439,7 +441,7 @@
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="newProjectModalTitle">
       <div class="modal-head">
         <div class="modal-title" id="newProjectModalTitle">Start a new project</div>
-        <div class="modal-subtitle">Choose whether to begin with a blank slate or load the built-in demo project. Either choice will replace the current session.</div>
+        <div class="modal-subtitle">Choose whether to begin with a blank slate or load the built-in demo book. Either choice will replace the current session.</div>
       </div>
       <div class="modal-body">
         <div class="modal-actions">
@@ -448,7 +450,7 @@
             <span>→</span>
           </button>
           <button class="modal-btn" id="newDemoProjectBtn" type="button">
-            <span>Demo File<br><small>Load the sample book with example chapters</small></span>
+            <span>Demo File<br><small>Load the sample book with preface, introduction, 5 chapters, and epilogue</small></span>
             <span>→</span>
           </button>
           <button class="modal-btn" id="cancelNewProjectBtn" type="button">
@@ -473,7 +475,11 @@
       ribbonPanels: [...document.querySelectorAll(".ribbon-panel")],
       structureList: document.getElementById("structureList"),
       navigatorList: document.getElementById("navigatorList"),
-      navigatorModeChip: document.getElementById("navigatorModeChip"),
+      navigatorSectionTitle: document.getElementById("navigatorSectionTitle"),
+      navigatorChaptersBtn: document.getElementById("navigatorChaptersBtn"),
+      navigatorOutlineBtn: document.getElementById("navigatorOutlineBtn"),
+      chaptersView: document.getElementById("chaptersView"),
+      outlineView: document.getElementById("outlineView"),
       metaTitle: document.getElementById("metaTitle"),
       metaAuthor: document.getElementById("metaAuthor"),
       metaLanguage: document.getElementById("metaLanguage"),
@@ -881,7 +887,8 @@ Use this demo as a tutorial, then replace it with your own work. Keep moving unt
       activeChapterIndex: 0,
       theme: localStorage.getItem(THEME_KEY) || "light",
       activeRibbonTab: localStorage.getItem(TAB_KEY) || "home",
-      ribbonCollapsed: false
+      ribbonCollapsed: false,
+      navigatorView: localStorage.getItem("mike_epub_editor_navigator_view") || "chapters"
     };
 
     const editor = new toastui.Editor({
@@ -968,6 +975,18 @@ Use this demo as a tutorial, then replace it with your own work. Keep moving unt
       setTimeout(() => editor.refresh && editor.refresh(), 30);
     }
 
+
+    function setNavigatorView(view) {
+      state.navigatorView = view === "outline" ? "outline" : "chapters";
+      localStorage.setItem("mike_epub_editor_navigator_view", state.navigatorView);
+      const outline = state.navigatorView === "outline";
+      els.chaptersView.classList.toggle("active", !outline);
+      els.outlineView.classList.toggle("active", outline);
+      els.navigatorChaptersBtn.classList.toggle("active", !outline);
+      els.navigatorOutlineBtn.classList.toggle("active", outline);
+      els.navigatorSectionTitle.textContent = outline ? "Book Outline" : "Sections";
+    }
+
     function setRibbonCollapsed(collapsed) {
       state.ribbonCollapsed = collapsed;
       els.ribbon.classList.toggle("collapsed", collapsed);
@@ -1019,9 +1038,9 @@ Use this demo as a tutorial, then replace it with your own work. Keep moving unt
 
     function buildNavigatorItems() {
       return state.project.chapters.map((chapter, index) => ({
-        type: "chapter",
+        type: "section",
         chapterIndex: index,
-        label: chapter.title || `Chapter ${index + 1}`,
+        label: chapter.title || `Section ${index + 1}`,
         headings: extractHeadingsFromMarkdown(chapter.content || "").map(item => ({
           type: "heading",
           chapterIndex: index,
@@ -1032,120 +1051,82 @@ Use this demo as a tutorial, then replace it with your own work. Keep moving unt
       }));
     }
 
-    function renderNavigator() {
-      els.navigatorModeChip.textContent = "Outline";
-      const items = buildNavigatorItems();
-      if (!items.length) {
-        els.navigatorList.innerHTML = `<div class="muted">No headings yet.</div>`;
+    function jumpToNavigatorItem(item) {
+      const targetIndex = typeof item.chapterIndex === "number" ? item.chapterIndex : state.activeChapterIndex;
+      if (targetIndex !== state.activeChapterIndex) {
+        switchChapter(targetIndex, false);
+      }
+      if (item.type === "heading" && item.headingText) {
+        try {
+          const markdown = editor.getMarkdown();
+          const headingLine = markdown.split(/\r?\n/).findIndex(line => {
+            return line.replace(/^#{1,6}\s+/, "").trim() === item.headingText.trim();
+          });
+          if (headingLine >= 0 && editor.moveCursorToStart) {
+            editor.moveCursorToStart();
+            if (editor.setSelection) editor.setSelection([headingLine + 1, 1], [headingLine + 1, 1]);
+          }
+        } catch {}
+        setStatus(`Jumped to ${item.headingText}`, "ok");
         return;
       }
+      setStatus(`Jumped to ${getActiveChapter().title}`, "ok");
+    }
+
+    function renderNavigator() {
+      const items = buildNavigatorItems();
+      const outlineMode = state.navigatorView === "outline";
+      if (!outlineMode) return;
       els.navigatorList.innerHTML = "";
-      items.forEach((item) => {
+      let totalHeadings = 0;
+      items.forEach((section, sectionIndex) => {
         const wrap = document.createElement("div");
-        wrap.className = "nav-outline-item";
+        const sectionBtn = document.createElement("button");
+        sectionBtn.type = "button";
+        sectionBtn.className = `nav-link chapter${sectionIndex === state.activeChapterIndex ? " active" : ""}`;
+        sectionBtn.textContent = section.label;
+        sectionBtn.addEventListener("click", () => jumpToNavigatorItem({ type: "section", chapterIndex: sectionIndex, label: section.label }));
+        wrap.appendChild(sectionBtn);
 
-        const row = document.createElement("div");
-        row.className = "nav-outline-row";
-
-        const toggle = document.createElement("button");
-        toggle.type = "button";
-        toggle.className = "nav-outline-toggle";
-        const expanded = item.chapterIndex === state.activeChapterIndex;
-        toggle.textContent = item.headings.length ? (expanded ? "−" : "+") : "•";
-        if (!item.headings.length) toggle.disabled = true;
-
-        const main = document.createElement("div");
-        main.className = "nav-outline-main";
-        const chapterBtn = document.createElement("button");
-        chapterBtn.type = "button";
-        chapterBtn.className = `nav-link chapter${item.chapterIndex === state.activeChapterIndex ? " active" : ""}`;
-        chapterBtn.textContent = item.label;
-        chapterBtn.addEventListener("click", () => jumpToNavigatorItem(item));
-        main.appendChild(chapterBtn);
-
-        row.appendChild(toggle);
-        row.appendChild(main);
-        wrap.appendChild(row);
-
-        const headingsBox = document.createElement("div");
-        headingsBox.className = "nav-outline-headings";
-        headingsBox.style.display = expanded ? "flex" : "none";
-
-        item.headings.forEach((heading) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "nav-link heading";
-          btn.textContent = heading.label;
-          btn.style.marginLeft = `${Math.max(0, heading.level - 1) * 10}px`;
-          btn.addEventListener("click", () => jumpToNavigatorItem(heading));
-          headingsBox.appendChild(btn);
-        });
-
-        toggle.addEventListener("click", () => {
-          if (!item.headings.length) return;
-          const open = headingsBox.style.display !== "none";
-          headingsBox.style.display = open ? "none" : "flex";
-          toggle.textContent = open ? "+" : "−";
-        });
-
-        wrap.appendChild(headingsBox);
+        const subheadings = section.headings.filter(item => item.level > 1);
+        if (subheadings.length) {
+          subheadings.forEach((heading) => {
+            totalHeadings += 1;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "nav-link heading";
+            btn.textContent = heading.label;
+            btn.style.marginLeft = `${12 + Math.max(0, heading.level - 2) * 12}px`;
+            btn.addEventListener("click", () => jumpToNavigatorItem(heading));
+            wrap.appendChild(btn);
+          });
+        } else {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.style.padding = "0.2rem 0 0.4rem 1rem";
+          empty.textContent = "No subheadings yet";
+          wrap.appendChild(empty);
+        }
         els.navigatorList.appendChild(wrap);
       });
-    }
-
-    function focusPreviewHeading(headingText) {
-      const selectors = [
-        ".toastui-editor-md-preview .toastui-editor-contents h1",
-        ".toastui-editor-md-preview .toastui-editor-contents h2",
-        ".toastui-editor-md-preview .toastui-editor-contents h3",
-        ".toastui-editor-md-preview .toastui-editor-contents h4",
-        ".toastui-editor-md-preview .toastui-editor-contents h5",
-        ".toastui-editor-md-preview .toastui-editor-contents h6"
-      ].join(",");
-      const headings = [...document.querySelectorAll(selectors)];
-      const match = headings.find(node => (node.textContent || "").trim() === headingText.trim());
-      if (match) {
-        match.scrollIntoView({ behavior: "smooth", block: "start" });
-        return true;
+      if (!items.length) {
+        els.navigatorList.innerHTML = `<div class="muted">No sections yet.</div>`;
+      } else if (!totalHeadings) {
+        els.navigatorList.insertAdjacentHTML("afterbegin", `<div class="muted" style="margin-bottom:0.5rem;">Outline is showing the whole book, but no section has H2 or H3 headings yet.</div>`);
       }
-      return false;
-    }
-
-    function jumpToHeadingInEditor(headingText) {
-      const md = editor.getMarkdown();
-      const lines = md.split("\n");
-      const lineIndex = lines.findIndex(line => line.replace(/^#{1,6}\s+/, "").trim() === headingText.trim());
-      if (lineIndex >= 0) {
-        editor.moveCursorToStart();
-        for (let i = 0; i < lineIndex; i++) editor.exec("GoLineDown");
-      }
-    }
-
-    function jumpToNavigatorItem(item) {
-      if (item.chapterIndex !== state.activeChapterIndex) switchChapter(item.chapterIndex, false);
-      if (item.type === "chapter") {
-        editor.focus();
-        setStatus(`Jumped to ${item.label}`, "ok");
-        return;
-      }
-      setTimeout(() => {
-        const hit = focusPreviewHeading(item.headingText);
-        if (!hit) jumpToHeadingInEditor(item.headingText);
-        setStatus(`Jumped to ${item.headingText}`, "ok");
-      }, 120);
     }
 
     function updateStats() {
       const chapter = getActiveChapter();
-      const text = chapter?.content || "";
-      const words = (text.trim().match(/\S+/g) || []).length;
+      const markdown = chapter?.content || "";
+      const words = (markdown.match(/\S+/g) || []).length;
+      const chars = markdown.length;
+      const sectionCount = state.project.chapters.length;
       els.wordCount.textContent = `Words: ${words}`;
-      els.charCount.textContent = `Characters: ${text.length}`;
-      els.chapterCount.textContent = `Chapters: ${state.project.chapters.length}`;
-      els.bookMetaSummary.textContent = `${state.project.chapters.length} chapter${state.project.chapters.length === 1 ? "" : "s"}`;
-      els.editorMeta.textContent = chapter ? `${state.activeChapterIndex + 1}. ${chapter.title}` : "No active chapter";
-      els.themeStatus.textContent = `Theme: ${capitalize(state.project.styles.theme)}`;
-      els.themeChip.textContent = capitalize(state.project.styles.theme);
+      els.charCount.textContent = `Characters: ${chars}`;
+      els.chapterCount.textContent = `Sections: ${sectionCount}`;
+      els.bookMetaSummary.textContent = `${sectionCount} sections`;
+      els.editorMeta.textContent = chapter?.title || "Active section";
     }
 
     function touchProject(message = "Saved locally") {
@@ -1154,9 +1135,14 @@ Use this demo as a tutorial, then replace it with your own work. Keep moving unt
       updateStructureList();
       updateStats();
       renderNavigator();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.project));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.project));
+      } catch (error) {
+        console.warn("Autosave failed", error);
+      }
       setStatus(message, "ok");
     }
+
 
     function switchChapter(index, announce = true) {
       saveActiveChapterContent();
@@ -1543,6 +1529,7 @@ th, td { border:1px solid #cfcfcf; padding:0.65em 0.8em; text-align:left; }`;
       updateStructureList();
       updateStats();
       renderNavigator();
+      setNavigatorView(state.navigatorView);
       setTheme(state.theme);
       setRibbonTab(state.activeRibbonTab);
       setRibbonCollapsed(false);
@@ -1621,7 +1608,9 @@ th, td { border:1px solid #cfcfcf; padding:0.65em 0.8em; text-align:left; }`;
     document.getElementById("renameChapterBtn").addEventListener("click", renameChapter);
     document.getElementById("chapterTitleFromHeadingBtn").addEventListener("click", pullChapterTitleFromH1);
     document.getElementById("applyTitleToChapterBtn").addEventListener("click", applyBookTitleToChapter);
-    document.getElementById("refreshNavBtn").addEventListener("click", () => { renderNavigator(); setStatus("Navigator refreshed", "ok"); });
+    document.getElementById("refreshNavBtn").addEventListener("click", () => { renderNavigator(); setStatus("Outline refreshed", "ok"); });
+    document.getElementById("navigatorChaptersBtn").addEventListener("click", () => setNavigatorView("chapters"));
+    document.getElementById("navigatorOutlineBtn").addEventListener("click", () => { setNavigatorView("outline"); renderNavigator(); });
 
     document.getElementById("chooseCoverBtn").addEventListener("click", chooseCover);
     document.getElementById("drawerChooseCoverBtn").addEventListener("click", () => { chooseCover(); closeDrawer(); });
