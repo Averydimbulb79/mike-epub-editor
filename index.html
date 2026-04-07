@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mike EPUB Editor v1.1</title>
-  <meta name="generator" content="Mike EPUB Editor v1.1" />
+  <title>Mike EPUB Editor v1.5</title>
+  <meta name="generator" content="Mike EPUB Editor v1.5" />
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.5/dist/purify.min.js"></script>
@@ -115,6 +115,57 @@
     .toastui-editor-contents { font-family: var(--font-ui) !important; }
     .toastui-editor-md-preview { border-left-color: var(--line) !important; }
     .toastui-editor-md-container .toastui-editor, .toastui-editor-ww-container .toastui-editor { color: var(--text) !important; }
+    .toastui-editor-ww-container .ProseMirror,
+    .toastui-editor-ww-container .ProseMirror p,
+    .toastui-editor-ww-container .ProseMirror li,
+    .toastui-editor-ww-container .ProseMirror blockquote,
+    .toastui-editor-ww-container .ProseMirror td,
+    .toastui-editor-ww-container .ProseMirror th,
+    .toastui-editor-md-container .toastui-editor,
+    .toastui-editor-md-preview .toastui-editor-contents,
+    .toastui-editor-md-preview .toastui-editor-contents p,
+    .toastui-editor-md-preview .toastui-editor-contents li,
+    .toastui-editor-md-preview .toastui-editor-contents blockquote,
+    .toastui-editor-md-preview .toastui-editor-contents td,
+    .toastui-editor-md-preview .toastui-editor-contents th {
+      color: var(--text) !important;
+      opacity: 1 !important;
+      -webkit-text-fill-color: var(--text) !important;
+    }
+    .toastui-editor-contents h1, .toastui-editor-contents h2, .toastui-editor-contents h3,
+    .toastui-editor-contents h4, .toastui-editor-contents h5, .toastui-editor-contents h6 {
+      color: var(--heading) !important;
+      -webkit-text-fill-color: var(--heading) !important;
+    }
+    .toastui-editor-contents a { color: var(--accent) !important; }
+    body[data-theme="dark"] .toastui-editor-defaultUI-toolbar button {
+      background: transparent !important;
+      border-color: transparent !important;
+    }
+    body[data-theme="dark"] .toastui-editor-defaultUI-toolbar button:hover,
+    body[data-theme="dark"] .toastui-editor-defaultUI-toolbar button.active,
+    body[data-theme="dark"] .toastui-editor-toolbar-group button:hover {
+      background: rgba(255,255,255,.08) !important;
+      border-color: var(--line) !important;
+    }
+    body[data-theme="dark"] .toastui-editor-toolbar-icons {
+      filter: brightness(2.2) contrast(1.15) saturate(0) !important;
+      opacity: .96 !important;
+    }
+    body[data-theme="dark"] .toastui-editor-toolbar-divider {
+      filter: brightness(1.6) !important;
+      opacity: .75 !important;
+    }
+    body[data-theme="dark"] .toastui-editor-md-tab-container .tab-item,
+    body[data-theme="dark"] .toastui-editor-mode-switch .tab-item {
+      color: var(--muted) !important;
+    }
+    body[data-theme="dark"] .toastui-editor-md-tab-container .tab-item.active,
+    body[data-theme="dark"] .toastui-editor-mode-switch .tab-item.active {
+      color: var(--heading) !important;
+      background: var(--surface) !important;
+    }
+
     .statusbar { padding: 0 16px calc(var(--safe-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid var(--line); background: var(--surface-3); color: var(--muted); font-size: 12px; min-height: calc(var(--status-h) + var(--safe-bottom)); flex-wrap: wrap; }
     .status-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-height: var(--status-h); }
     .kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 700; padding: 0 6px; }
@@ -126,6 +177,21 @@
     .drawer-title { font-size: 15px; font-weight: 700; color: var(--heading); }
     .drawer-body { overflow: auto; padding: 14px; padding-bottom: calc(14px + var(--safe-bottom)); display: flex; flex-direction: column; gap: 14px; }
     .muted { color: var(--muted); }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.46); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
+    .modal-backdrop.open { display: flex; }
+    .modal-card { width: min(92vw, 460px); background: var(--app); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-panel); overflow: hidden; }
+    .modal-head { padding: 18px 20px 12px; border-bottom: 1px solid var(--line); background: var(--surface-3); }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--heading); }
+    .modal-subtitle { margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .modal-body { padding: 18px 20px 20px; display: grid; gap: 12px; }
+    .modal-actions { display: grid; gap: 10px; }
+    .modal-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; }
+    .modal-btn:hover { background: var(--surface-2); border-color: var(--line-strong); }
+    .modal-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .modal-btn.primary:hover { filter: brightness(1.03); }
+    .modal-btn small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .modal-btn.primary small { color: rgba(255,255,255,.82); }
     @media (max-width: 980px) {
       .quick-actions { display: none; }
       .menu-btn { display: inline-flex; }
@@ -150,6 +216,8 @@
       <div class="topbar-right">
         <div class="quick-actions">
           <button class="quick-btn primary" id="newProjectBtn" type="button">New</button>
+          <button class="quick-btn" id="undoBtn" type="button">Undo</button>
+          <button class="quick-btn" id="redoBtn" type="button">Redo</button>
           <label class="file-label" for="openProjectInput">Open Project</label>
           <button class="quick-btn" id="saveProjectBtn" type="button">Save Project</button>
           <button class="quick-btn" id="exportEpubTopBtn" type="button">EPUB</button>
@@ -175,6 +243,9 @@
           <div class="ribbon-group">
             <div class="ribbon-group-body">
               <div class="ribbon-stack">
+                <button class="tool-btn wide" id="newProjectRibbonBtn" type="button">New Project</button>
+                <button class="tool-btn wide" id="undoRibbonBtn" type="button">Undo</button>
+                <button class="tool-btn wide" id="redoRibbonBtn" type="button">Redo</button>
                 <button class="tool-btn wide" id="previewVerticalBtn" type="button">Split View</button>
                 <button class="tool-btn wide" id="previewTabBtn" type="button">Preview Tab</button>
                 <button class="tool-btn wide" id="editorTabBtn" type="button">Write Tab</button>
@@ -353,6 +424,8 @@
       <div class="section-card">
         <div class="section-head"><div class="section-title">Quick Actions</div></div>
         <div class="section-body">
+          <button class="drawer-btn" id="drawerUndoBtn" type="button">Undo</button>
+          <button class="drawer-btn" id="drawerRedoBtn" type="button">Redo</button>
           <button class="drawer-btn" id="drawerThemeBtn" type="button">Dark Mode</button>
           <button class="drawer-btn" id="drawerChooseCoverBtn" type="button">Upload Cover</button>
           <button class="drawer-btn" id="drawerAddChapterBtn" type="button">Add Chapter</button>
@@ -360,6 +433,32 @@
       </div>
     </div>
   </aside>
+
+
+  <div class="modal-backdrop" id="newProjectModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="newProjectModalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="newProjectModalTitle">Start a new project</div>
+        <div class="modal-subtitle">Choose whether to begin with a blank slate or load the built-in demo project. Either choice will replace the current session.</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-actions">
+          <button class="modal-btn primary" id="newBlankProjectBtn" type="button">
+            <span>Blank Slate<br><small>One empty chapter and fresh metadata</small></span>
+            <span>→</span>
+          </button>
+          <button class="modal-btn" id="newDemoProjectBtn" type="button">
+            <span>Demo File<br><small>Load the sample book with example chapters</small></span>
+            <span>→</span>
+          </button>
+          <button class="modal-btn" id="cancelNewProjectBtn" type="button">
+            <span>Cancel<br><small>Keep the current project exactly as it is</small></span>
+            <span>×</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     marked.setOptions({ breaks: true, gfm: true });
@@ -397,16 +496,17 @@
       themeChip: document.getElementById("themeChip"),
       drawerBackdrop: document.getElementById("drawerBackdrop"),
       sideDrawer: document.getElementById("sideDrawer"),
-      menuToggleBtn: document.getElementById("menuToggleBtn")
+      menuToggleBtn: document.getElementById("menuToggleBtn"),
+      newProjectModal: document.getElementById("newProjectModal")
     };
 
-    const defaultProject = () => ({
+    const blankProject = () => ({
       metadata: {
-        title: "The Shape of Things",
-        author: "Demo Author",
+        title: "Untitled Book",
+        author: "",
         language: "en",
-        publisher: "MEE Demo Press",
-        description: "A showcase of structure, formatting, navigation, and EPUB export.",
+        publisher: "",
+        description: "",
         identifier: crypto.randomUUID ? crypto.randomUUID() : `mee-${Date.now()}`
       },
       cover: null,
@@ -414,108 +514,370 @@
       chapters: [
         {
           id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-1`,
-          title: "Chapter 1: Simple Prose",
-          content: `# Simple Prose
+          title: "Chapter 1",
+          content: `# Chapter 1
 
-This is a clean paragraph demonstrating standard EPUB text flow.
+Start writing here.
+`
+        }
+      ]
+    });
 
-Writing in structured formats produces more predictable output. It is less glamorous than chaos, but far more employable.
+    const demoProject = () => ({
+      metadata: {
+        title: "Publish, Don’t Perish",
+        author: "Mike EPUB Editor",
+        language: "en",
+        publisher: "MEE Demo Press",
+        description: "An eight-part tutorial book on self-publishing with Mike EPUB Editor, complete with preface, introduction, five core chapters, and an epilogue.",
+        identifier: crypto.randomUUID ? crypto.randomUUID() : `mee-${Date.now()}`
+      },
+      cover: null,
+      styles: { theme: "classic" },
+      chapters: [
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-1`,
+          title: "Preface: Before the Book Begins",
+          content: `# Preface: Before the Book Begins
 
-## Subsection
+Welcome to a small book about making a book. It is reassuringly self-referential.
 
-Clarity scales. Structure preserves it.
+This demo project is designed to do two jobs at once: teach the basics of self-publishing with Mike EPUB Editor, and give you realistic content to test headings, spacing, lists, quotes, navigation, and EPUB export. In other words, it behaves less like filler text and more like a manuscript with somewhere to be.
 
-## Closing Note
+## Why This Demo Exists
 
-This chapter is here to show plain reading content with a simple outline.`
+A demo should not merely sit there looking decorative. It should help you understand the rhythm of the tool.
+
+Use this file to see how a book can be laid out from front matter to final pages. Read it, revise it, duplicate it, break it, then put it back together. That is a far healthier relationship with software than fearful tiptoeing.
+
+## What Self-Publishing Actually Is
+
+Self-publishing is not a mysterious ritual performed only by people who have memorised fifteen publishing acronyms before breakfast.
+
+At heart, it is a practical sequence:
+
+- shape the manuscript
+- write and revise it well
+- package it cleanly
+- export it correctly
+- proof it like a reader
+- release it with a straight face
+
+Mike EPUB Editor exists to make those steps simpler, cleaner, and less likely to end in a folder full of files named FINAL_FINAL_REVISED_3.
+`
         },
         {
           id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-2`,
-          title: "Chapter 2: Rich Formatting",
-          content: `# Rich Formatting
+          title: "Introduction: Start with the Skeleton",
+          content: `# Introduction: Start with the Skeleton
 
-**Bold text** and *italic text* demonstrate emphasis.
+Books do not begin with polish. They begin with structure.
 
-> This is a blockquote. It should feel visually distinct and easy to spot in preview and export.
+In this editor, structure is visible. That matters. When your chapters, headings, metadata, and cover all live in one coherent workspace, the book becomes easier to think about. A visible skeleton turns a vague manuscript into a manageable object.
 
-## Lists
+## Set the Book Details First
 
-- Item one
-- Item two
-- Item three
+Before you race into Chapter One with the confidence of a person who has not yet met formatting consequences, fill in the metadata.
 
-1. First
-2. Second
-3. Third
+Add the essentials:
 
-## Inline Code
+- title
+- author
+- language
+- publisher
+- description
 
-Use \`semantic structure\` instead of visual guesswork.`
+These values are not just decorative labels in the interface. They are packaged into the EPUB and read by apps, devices, and storefront systems. Clean metadata gives your book an identity before a reader sees a single paragraph.
+
+## Think in Parts, Not Just Pages
+
+A proper book often has more than body chapters. Front matter and closing matter help orient the reader and complete the arc.
+
+This demo uses a simple nonfiction pattern:
+
+- Preface
+- Introduction
+- Five core chapters
+- Epilogue
+
+That structure is enough to feel like a real book, but compact enough to study in one sitting.
+
+## Use Headings with Discipline
+
+Each chapter should usually begin with one H1 heading. Subsections can then use H2 and H3 headings.
+
+That hierarchy matters because it improves:
+
+- navigation in the editor
+- navigation in the EPUB
+- readability for humans
+- consistency during export
+
+A heading should not be chosen merely because it “looks big.” That path leads to chaos wearing typography.
+`
         },
         {
           id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-3`,
-          title: "Chapter 3: Long-form Reading",
-          content: `# Long-form Reading
+          title: "Chapter 1: Draft Like a Publisher",
+          content: `# Chapter 1: Draft Like a Publisher
 
-This chapter simulates a longer reading experience.
+Drafting for self-publishing is not just about writing attractively. It is about writing cleanly.
 
-A book editor should not only survive short snippets. It should also remain comfortable when a chapter begins to stretch, scroll, and accumulate shape. That is where a writing workspace proves whether it is genuinely useful or merely decorative.
+Mike EPUB Editor lets you work in Markdown or WYSIWYG mode. Both are valid. Markdown is excellent for speed, structure, and minimal fuss. WYSIWYG is useful when you want a more visual sense of the page. Use the one that helps you move, not the one that makes you feel like you ought to be more sophisticated.
 
-## Continuation
+## Write with Semantic Intent
 
-Longer passages help test scrolling, navigator behaviour, and the overall reading rhythm inside the editor. They also make it easier to judge how headings break up a chapter into usable sections.
+The best export begins with clean source material.
 
-## Another Section
+Use:
 
-When structure is clear, navigation becomes faster, export becomes cleaner, and revision becomes much less irritating. A small administrative miracle.`
+- headings for hierarchy
+- paragraphs for body text
+- lists for grouped points
+- blockquotes for quoted material
+
+Do not fake structure by making random text bold and hoping it becomes meaningful. EPUB files are polite, but they are not psychic.
+
+> A tidy manuscript is not glamorous, but it is deeply attractive to future-you.
+
+## Draft Forward, Revise Backward
+
+A useful drafting rhythm is simple:
+
+1. write the section to the end
+2. leave obvious flaws in place for now
+3. return and revise with a cooler head
+4. clean the formatting before export
+
+This avoids the trap of editing sentence one seventeen times while sentence two remains a rumour.
+
+## Save Versions Without Drama
+
+Project files preserve your metadata, chapter list, theme state, cover data, and content. Save often, and save with names that make sense.
+
+Examples:
+
+- memoir-v1.mee.json
+- memoir-v2-structural-edits.mee.json
+- memoir-proofed.mee.json
+
+That is far superior to trusting memory, luck, or divine intervention.
+`
         },
         {
           id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-4`,
-          title: "Chapter 4: Structure and Navigation",
-          content: `# Structure and Navigation
+          title: "Chapter 2: Structure the Reader’s Journey",
+          content: `# Chapter 2: Structure the Reader’s Journey
 
-This chapter is designed to test the outline pane.
+A self-published book does not need to be grand, but it does need to be navigable.
 
-## Section A
+Readers do not experience a manuscript as one long emotional blur. They move through it in sections, pauses, and transitions. Good structure helps them feel carried rather than dragged.
 
-Jumping between sections should feel immediate.
+## Build Clear Chapters
 
-## Section B
+Each chapter should have a distinct purpose. If two chapters are trying to do the same job, one of them is probably freeloading.
 
-The outline should reflect hierarchy clearly.
+A useful chapter usually contains:
 
-### Nested Section
+- a clear opening idea
+- a few subsections
+- a logical close
+- a sense of movement
 
-Deeper levels should still remain readable and clickable.
+This is true whether you are writing memoir, instruction, essays, or fiction.
 
-## Section C
+## Let the Outline Work for You
 
-Structure is the backbone of EPUB production.`
+Headings are not merely formatting ornaments. They create a navigational map in the editor.
+
+Use the outline to:
+
+- jump quickly between sections
+- spot missing hierarchy
+- notice overlong sections
+- verify that the chapter has internal shape
+
+A flat wall of text is not automatically profound. Quite often it is just exhausting.
+
+## Keep Titles Consistent
+
+Chapter titles should sound like they belong to the same book.
+
+For example, choose one tonal lane:
+
+- plain and direct
+- literary and reflective
+- playful and conversational
+
+Mixing “Chapter 4: Metadata Basics” with “The Whispering Staircase of Destiny” is certainly memorable, but perhaps not in the way you intended.
+`
         },
         {
           id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-5`,
-          title: "Chapter 5: Export Readiness",
-          content: `# Export Readiness
+          title: "Chapter 3: Metadata, Cover, and First Impressions",
+          content: `# Chapter 3: Metadata, Cover, and First Impressions
 
-This chapter closes the demo and helps test packaging.
+Before the text gets its chance, the packaging speaks first.
 
-## Metadata Awareness
+Readers notice the title. Retailers parse the metadata. Reading systems inspect the language and identifier. A cover creates mood before the opening line can defend itself. All of this happens quickly, and none of it is trivial.
 
-Title, author, language, and publisher should all be embedded cleanly.
+## Metadata Is Functional, Not Decorative
 
-## Styling
+Fill in the book details with care.
 
-Themes should apply consistently across every chapter.
+The title should be stable and intentional. The author name should match how you want to be credited. The language must be correct. The description should say what the book is without wandering off to flirt with abstraction.
 
-## Final Note
+Good metadata helps with:
 
-A well-structured document exports cleanly, every time. That is the job.`
+- discoverability
+- cataloguing
+- device display
+- retailer ingestion
+- professional presentation
+
+## Covers Matter More Than Authors Wish
+
+Writers often want to believe the words alone will win. Sometimes they do. Usually, though, the cover gets the first interview.
+
+A practical cover should:
+
+- fit the tone of the book
+- remain legible at small size
+- avoid clutter
+- feel finished rather than improvised
+
+You can upload a cover here so the EPUB has one from the outset. A book without a cover is technically still a book, but it enters the room underdressed.
+
+## Your Book Is a Product and a Piece of Writing
+
+That sentence annoys some artists. It remains true anyway.
+
+Self-publishing means you are both author and production desk. The cleaner your metadata and cover work, the less friction your book will face once it leaves the editor.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-6`,
+          title: "Chapter 4: Export Without Embarrassment",
+          content: `# Chapter 4: Export Without Embarrassment
+
+Export is the moment where private drafting becomes public consequence.
+
+An EPUB is not simply “the text in a file.” It is a package containing content, navigation, metadata, styling, and reading order. When these pieces agree with one another, the book feels smooth. When they do not, the result can look as though it was assembled during a mild electrical storm.
+
+## Prepare for Export
+
+Before exporting, perform a short preflight check:
+
+- chapter titles make sense
+- headings appear in the right order
+- duplicated chapter headings are removed
+- metadata is complete
+- the cover is set if required
+- strange pasted formatting has been cleaned up
+
+A two-minute check can spare you an hour of muttering later.
+
+## Choose the Right Output
+
+Use HTML export when you want a readable handoff or a quick browser version.
+
+Use EPUB export when you want:
+
+- a portable ebook
+- device testing
+- reviewer copies
+- platform uploads
+- a more book-like package
+
+Different reading apps will still style EPUBs slightly differently, because standards are one thing and software personalities are another. The goal is not absolute sameness. The goal is a clean source that travels well.
+
+## Proof the Actual EPUB
+
+Always open the exported file and read it like a reader.
+
+Check:
+
+1. chapter openings
+2. heading spacing
+3. paragraph rhythm
+4. navigation links
+5. image behaviour
+6. line breaks and lists
+
+This is where tiny crimes reveal themselves.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-7`,
+          title: "Chapter 5: Publish, Test, Improve, Repeat",
+          content: `# Chapter 5: Publish, Test, Improve, Repeat
+
+Self-publishing rewards momentum more than fantasy.
+
+At some point the manuscript must stop being a private theory and start becoming a tested object. That means exporting, reviewing, correcting, and repeating until the book is solid enough to stand on its own.
+
+## Think in Iterations
+
+A sensible publishing workflow often looks like this:
+
+1. draft the manuscript
+2. revise for clarity
+3. clean the structure
+4. export the EPUB
+5. proof on real devices or apps
+6. fix what looks wrong
+7. repeat until stable
+
+That is not a sign of failure. It is the process.
+
+## Test Beyond One App
+
+Do not trust a single reading app to define truth for the entire EPUB ecosystem.
+
+If possible, test in more than one environment. A file that reads well in several places is usually in much healthier condition than one blessed by exactly one app on exactly one device.
+
+## Shipping Is Part of Writing
+
+There comes a point where “still polishing” becomes a very refined form of hiding.
+
+Once the structure is sound, the text is proofed, and the EPUB behaves properly, publish the thing. You can always improve the next edition. You cannot improve the edition that never leaves your laptop.
+`
+        },
+        {
+          id: crypto.randomUUID ? crypto.randomUUID() : `ch-${Date.now()}-8`,
+          title: "Epilogue: From Draft to Bookshelf",
+          content: `# Epilogue: From Draft to Bookshelf
+
+And there you are: not merely with a manuscript, but with a shaped, packaged, exportable book.
+
+Self-publishing often looks intimidating from a distance because people imagine one enormous leap. In practice it is a sequence of manageable actions performed with reasonable care. Build the structure. Write the chapters. Revise intelligently. Export cleanly. Proof honestly. Release bravely.
+
+## A Simple Working Rhythm
+
+A practical loop might be:
+
+- create the metadata
+- build the chapter list
+- draft the sections
+- revise the language
+- export the EPUB
+- test the file
+- improve the next pass
+
+There is no need to turn the process into a cathedral of complication.
+
+## Last Word
+
+Mike EPUB Editor is not trying to be every publishing tool in existence. It is trying to be useful.
+
+Use this demo as a tutorial, then replace it with your own work. Keep moving until the book stops being an intention and becomes a file you can actually hand to the world. That is the whole trick.
+`
         }
       ]
     });
 
     const state = {
-      project: defaultProject(),
+      project: demoProject(),
       activeChapterIndex: 0,
       theme: localStorage.getItem(THEME_KEY) || "light",
       activeRibbonTab: localStorage.getItem(TAB_KEY) || "home",
@@ -875,14 +1237,57 @@ A well-structured document exports cleanly, every time. That is the job.`
     function chooseCover() { els.coverInput.click(); }
     function clearCover() { state.project.cover = null; updateCoverMini(); touchProject("Cover cleared"); }
 
-    function newProject() {
-      if (!confirm("Start a new MEE project? Unsaved changes in the current session will be replaced.")) return;
-      state.project = defaultProject();
+    function openNewProjectModal() {
+      els.newProjectModal.classList.add("open");
+      els.newProjectModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeNewProjectModal() {
+      els.newProjectModal.classList.remove("open");
+      els.newProjectModal.setAttribute("aria-hidden", "true");
+    }
+
+    function startProject(kind) {
+      const label = kind === "blank" ? "blank slate" : "demo project";
+      if (!confirm(`Start a new ${label}? Unsaved changes in the current session will be replaced.`)) return;
+      state.project = kind === "blank" ? blankProject() : demoProject();
       state.activeChapterIndex = 0;
       pushMetadataToInputs();
       updateCoverMini();
       loadActiveChapterIntoEditor();
-      touchProject("New project ready");
+      touchProject(kind === "blank" ? "Blank project ready" : "Demo project loaded");
+      closeNewProjectModal();
+    }
+
+    function newProject() {
+      openNewProjectModal();
+    }
+
+    function syncEditorUi(message) {
+      saveActiveChapterContent();
+      updateStats();
+      renderNavigator();
+      setStatus(message, "ok");
+    }
+
+    function undoEdit() {
+      try {
+        editor.exec("undo");
+        syncEditorUi("Undid last change");
+      } catch (error) {
+        console.error(error);
+        setStatus("Undo is not available right now", "warn");
+      }
+    }
+
+    function redoEdit() {
+      try {
+        editor.exec("redo");
+        syncEditorUi("Redid last change");
+      } catch (error) {
+        console.error(error);
+        setStatus("Redo is not available right now", "warn");
+      }
     }
 
     function downloadBlob(blob, filename) {
@@ -926,9 +1331,59 @@ A well-structured document exports cleanly, every time. That is the job.`
     }
 
     function buildCss(themeName) {
-      if (themeName === "modern") return `body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; color: #1f2732; } h1,h2,h3,h4,h5,h6 { color:#0f141a; letter-spacing:-0.02em; } h1 { font-size:2em; border-bottom:1px solid #d8dde6; padding-bottom:0.2em; } h2 { font-size:1.55em; } p { margin:0.9em 0; } blockquote { margin:1em 0; padding:0.8em 1em; border-left:4px solid #2563eb; background:#f6f9ff; } code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; } pre { background:#1f2530; color:#f4f7fb; padding:1em; border-radius:10px; overflow:auto; } table { width:100%; border-collapse:collapse; margin:1em 0; } th, td { border:1px solid #d8dde6; padding:0.65em 0.8em; text-align:left; } img { max-width:100%; height:auto; } .pagebreak { break-before: page; page-break-before: always; }`;
-      if (themeName === "minimal") return `body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.75; color: #202020; } h1,h2,h3,h4,h5,h6 { font-weight:600; color:#111; } h1 { font-size:2em; } h2 { font-size:1.45em; } p { margin:1em 0; } blockquote { margin:1em 0; padding-left:1em; border-left:3px solid #999; color:#444; } code, pre { font-family: 'Courier New', monospace; } pre { background:#f3f3f3; color:#111; padding:1em; overflow:auto; } table { width:100%; border-collapse:collapse; margin:1em 0; } th, td { border:1px solid #bbb; padding:0.6em 0.75em; text-align:left; } img { max-width:100%; height:auto; } .pagebreak { break-before: page; page-break-before: always; }`;
-      return `body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.7; color: #222; } h1,h2,h3,h4,h5,h6 { color:#111; } h1 { font-size:2em; border-bottom:1px solid #cfcfcf; padding-bottom:0.2em; } h2 { font-size:1.5em; border-bottom:1px solid #e2e2e2; padding-bottom:0.15em; } p { margin:0.9em 0; } blockquote { margin:1em 0; padding:0.8em 1em; border-left:4px solid #666; background:#f6f6f6; } code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; } pre { background:#f5f5f5; padding:1em; border-radius:8px; overflow:auto; } table { width:100%; border-collapse:collapse; margin:1em 0; } th, td { border:1px solid #cfcfcf; padding:0.65em 0.8em; text-align:left; } img { max-width:100%; height:auto; } .pagebreak { break-before: page; page-break-before: always; }`;
+      const base = `html, body { margin: 0; padding: 0; }
+body { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; }
+body, p, li, blockquote, td, th { orphans: 2; widows: 2; }
+.chapter { padding: 0 0 0.4rem; }
+.chapter-title { margin: 0 0 1.25rem; page-break-after: avoid; break-after: avoid-page; }
+h1, h2, h3, h4, h5, h6 { page-break-after: avoid; break-after: avoid-page; line-height: 1.25; margin: 1.4em 0 0.55em; }
+h1:first-child, h2:first-child, h3:first-child { margin-top: 0; }
+p, ul, ol, dl, blockquote, pre, table, hr { margin: 0 0 1em; }
+ul, ol { padding-left: 1.35em; }
+li + li { margin-top: 0.25em; }
+blockquote { page-break-inside: avoid; }
+pre, code { white-space: pre-wrap; word-break: break-word; }
+pre { overflow-wrap: anywhere; }
+img, svg { display: block; max-width: 100%; height: auto; margin: 1em auto; page-break-inside: avoid; break-inside: avoid; }
+a { color: inherit; text-decoration: none; }
+hr { border: 0; border-top: 1px solid #cfcfcf; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+th, td { vertical-align: top; }
+.nav { padding: 0; }
+.nav h1 { margin-bottom: 1rem; }
+.nav ol { padding-left: 1.2em; }
+.nav li { margin: 0 0 0.45em; }
+.cover-page { margin: 0; padding: 0; }
+.cover-page img { margin: 0 auto; max-height: 100vh; width: auto; }
+.pagebreak { break-before: page; page-break-before: always; }`;
+      if (themeName === "modern") return `${base}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.72; color: #1f2732; padding: 5%; }
+h1,h2,h3,h4,h5,h6 { color:#0f141a; letter-spacing:-0.02em; font-weight: 700; }
+.chapter-title { font-size: 2.05em; border-bottom: 1px solid #d8dde6; padding-bottom: 0.28em; }
+h2 { font-size:1.55em; }
+h3 { font-size:1.25em; }
+blockquote { padding:0.8em 1em; border-left:4px solid #2563eb; background:#f6f9ff; }
+code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; }
+pre { background:#1f2530; color:#f4f7fb; padding:1em; border-radius:10px; }
+th, td { border:1px solid #d8dde6; padding:0.65em 0.8em; text-align:left; }`;
+      if (themeName === "minimal") return `${base}
+body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.78; color: #202020; padding: 6% 7%; }
+h1,h2,h3,h4,h5,h6 { font-weight:600; color:#111; }
+.chapter-title { font-size:2em; }
+h2 { font-size:1.45em; }
+blockquote { padding-left:1em; border-left:3px solid #999; color:#444; }
+code, pre { font-family: 'Courier New', monospace; }
+pre { background:#f3f3f3; color:#111; padding:1em; }
+th, td { border:1px solid #bbb; padding:0.6em 0.75em; text-align:left; }`;
+      return `${base}
+body { font-family: Georgia, 'Times New Roman', serif; line-height: 1.74; color: #222; padding: 6% 7%; }
+h1,h2,h3,h4,h5,h6 { color:#111; }
+.chapter-title { font-size:2em; border-bottom:1px solid #cfcfcf; padding-bottom:0.25em; }
+h2 { font-size:1.5em; border-bottom:1px solid #e2e2e2; padding-bottom:0.15em; }
+blockquote { padding:0.8em 1em; border-left:4px solid #666; background:#f6f6f6; }
+code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; }
+pre { background:#f5f5f5; padding:1em; border-radius:8px; }
+th, td { border:1px solid #cfcfcf; padding:0.65em 0.8em; text-align:left; }`;
     }
 
     function renderMarkdown(md) {
@@ -936,10 +1391,30 @@ A well-structured document exports cleanly, every time. That is the job.`
       return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
     }
 
+    function stripLeadingH1(md = "") {
+      return String(md).replace(/^\s*#\s+.+?(?:\r?\n|$)+/, "");
+    }
+
     function chapterToXhtml(chapter, index) {
       const title = chapter.title || `Chapter ${index + 1}`;
-      const html = renderMarkdown(chapter.content || "");
-      return `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head>\n  <title>${escapeXml(title)}</title>\n  <link rel="stylesheet" type="text/css" href="styles.css" />\n  <meta charset="utf-8" />\n</head>\n<body>\n  <section>\n    <h1>${escapeXml(title)}</h1>\n    ${html}\n  </section>\n</body>\n</html>`;
+      const cleanedMarkdown = stripLeadingH1(chapter.content || "");
+      const html = renderMarkdown(cleanedMarkdown);
+      return `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${escapeXml(state.project.metadata.language || "en")}">
+<head>
+  <title>${escapeXml(title)}</title>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body epub:type="bodymatter">
+  <article class="chapter" epub:type="chapter">
+    <h1 class="chapter-title">${escapeXml(title)}</h1>
+    ${html}
+  </article>
+</body>
+</html>`;
     }
 
     async function exportEpub() {
@@ -960,7 +1435,7 @@ A well-structured document exports cleanly, every time. That is the job.`
           const ext = fileExtensionFromMime(mime);
           const coverName = `cover.${ext}`;
           oebps.file(coverName, bytes, { binary: true });
-          oebps.file("cover.xhtml", `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head><title>Cover</title><meta charset="utf-8" /></head>\n<body><section epub:type="cover"><img src="${coverName}" alt="Cover" /></section></body>\n</html>`);
+          oebps.file("cover.xhtml", `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head><title>Cover</title><meta charset="utf-8" /></head>\n<body><section epub:type="cover" class="cover-page"><img src="${coverName}" alt="Cover" /></section></body>\n</html>`);
           coverMeta = `<meta name="cover" content="cover-image"/>`;
           coverManifest = `<item id="cover-image" href="${coverName}" media-type="${mime}"/>\n    <item id="cover-page" href="cover.xhtml" media-type="application/xhtml+xml"/>`;
           coverSpine = `<itemref idref="cover-page"/>`;
@@ -973,7 +1448,7 @@ A well-structured document exports cleanly, every time. That is the job.`
           return { id: `chapter-${index + 1}`, href: fileName, title: chapter.title || `Chapter ${index + 1}` };
         });
 
-        oebps.file("nav.xhtml", `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head><title>Table of Contents</title><meta charset="utf-8" /></head>\n<body><nav epub:type="toc" id="toc"><h1>Contents</h1><ol>${coverNavEntry}${chapterItems.map(item => `<li><a href="${item.href}">${escapeXml(item.title)}</a></li>`).join("")}</ol></nav></body>\n</html>`);
+        oebps.file("nav.xhtml", `<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${escapeXml(state.project.metadata.language || "en")}">\n<head><title>Table of Contents</title><meta charset="utf-8" /></head>\n<body><nav epub:type="toc" id="toc" class="nav"><h1>Contents</h1><ol>${coverNavEntry}${chapterItems.map(item => `<li><a href="${item.href}">${escapeXml(item.title)}</a></li>`).join("")}</ol></nav></body>\n</html>`);
 
         const modified = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
         oebps.file("content.opf", `<?xml version="1.0" encoding="utf-8"?>\n<package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="pub-id">\n  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n    <dc:identifier id="pub-id">${escapeXml(state.project.metadata.identifier)}</dc:identifier>\n    <dc:title>${escapeXml(state.project.metadata.title || "Untitled Book")}</dc:title>\n    <dc:language>${escapeXml(state.project.metadata.language || "en")}</dc:language>\n    <dc:creator>${escapeXml(state.project.metadata.author || "Unknown")}</dc:creator>\n    ${state.project.metadata.publisher ? `<dc:publisher>${escapeXml(state.project.metadata.publisher)}</dc:publisher>` : ""}\n    ${state.project.metadata.description ? `<dc:description>${escapeXml(state.project.metadata.description)}</dc:description>` : ""}\n    <meta property="dcterms:modified">${modified}</meta>\n    ${coverMeta}\n  </metadata>\n  <manifest>\n    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n    <item id="css" href="styles.css" media-type="text/css"/>\n    ${coverManifest}\n    ${chapterItems.map(item => `<item id="${item.id}" href="${item.href}" media-type="application/xhtml+xml"/>`).join("\n    ")}\n  </manifest>\n  <spine>\n    ${coverSpine}\n    ${chapterItems.map(item => `<itemref idref="${item.id}"/>`).join("\n    ")}\n  </spine>\n</package>`);
@@ -1109,6 +1584,19 @@ A well-structured document exports cleanly, every time. That is the job.`
     });
 
     document.getElementById("newProjectBtn").addEventListener("click", newProject);
+    document.getElementById("newProjectRibbonBtn").addEventListener("click", newProject);
+    document.getElementById("undoBtn").addEventListener("click", undoEdit);
+    document.getElementById("redoBtn").addEventListener("click", redoEdit);
+    document.getElementById("undoRibbonBtn").addEventListener("click", undoEdit);
+    document.getElementById("redoRibbonBtn").addEventListener("click", redoEdit);
+    document.getElementById("drawerUndoBtn").addEventListener("click", () => { undoEdit(); closeDrawer(); });
+    document.getElementById("drawerRedoBtn").addEventListener("click", () => { redoEdit(); closeDrawer(); });
+    document.getElementById("newBlankProjectBtn").addEventListener("click", () => startProject("blank"));
+    document.getElementById("newDemoProjectBtn").addEventListener("click", () => startProject("demo"));
+    document.getElementById("cancelNewProjectBtn").addEventListener("click", closeNewProjectModal);
+    els.newProjectModal.addEventListener("click", (event) => {
+      if (event.target === els.newProjectModal) closeNewProjectModal();
+    });
     document.getElementById("saveProjectBtn").addEventListener("click", saveProjectFile);
     document.getElementById("saveProjectRibbonBtn").addEventListener("click", saveProjectFile);
     document.getElementById("exportEpubTopBtn").addEventListener("click", exportEpub);
@@ -1151,6 +1639,17 @@ A well-structured document exports cleanly, every time. That is the job.`
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
         event.preventDefault();
         saveProjectFile();
+      }
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        undoEdit();
+      }
+      if ((event.ctrlKey || event.metaKey) && ((event.shiftKey && event.key.toLowerCase() === "z") || event.key.toLowerCase() === "y")) {
+        event.preventDefault();
+        redoEdit();
+      }
+      if (event.key === "Escape" && els.newProjectModal.classList.contains("open")) {
+        closeNewProjectModal();
       }
     });
 
