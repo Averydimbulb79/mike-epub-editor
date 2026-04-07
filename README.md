@@ -14,14 +14,27 @@ Open it. Start writing immediately.
 
 ---
 
+## ⚠️ Important (If You Used an Older Version)
+
+If you have opened this editor before in the same browser, your previous project may still be cached locally.
+
+To load the updated demo book:
+
+- Click **New**
+- Select **Demo File**
+
+This ensures you are using the latest demo structure and content.
+
+---
+
 ## What This Is
 
 Mike EPUB Editor is a single-file writing environment designed for:
 
 - Drafting books in Markdown or WYSIWYG  
-- Structuring content into chapters  
+- Structuring content into sections and chapters  
 - Managing book metadata and cover  
-- Exporting clean EPUB files without leaving the browser  
+- Exporting clean EPUB files directly from the browser  
 
 It is intentionally simple, fast, and local-first.
 
@@ -35,9 +48,9 @@ It is intentionally simple, fast, and local-first.
 - Heading-based outline navigation
 
 ### Structure
-- Chapter-based organization
-- Sidebar navigation
-- Automatic title extraction from H1
+- Section-based book organization  
+- Sidebar navigation with Sections / Outline toggle  
+- Automatic title extraction from H1  
 
 ### Book Setup
 - Editable metadata (title, author, etc.)
@@ -77,82 +90,13 @@ Think of it as a **writing workspace**, not a publishing suite.
 ## Getting Started
 
 1. Open the demo  
-2. Start a new project  
-3. Add chapters  
-4. Write  
+2. Click **New → Demo File**  
+3. Explore the structure  
+4. Start writing  
 5. Export EPUB  
-
-That’s it.
 
 ---
 
 ## Project File Format
 
-Projects are saved as: .mee.json
-
----
-
-
-Contains:
-- metadata  
-- chapters  
-- editor content  
-- theme state  
-- cover image  
-
----
-
-## Limitations
-
-- No drag-and-drop chapter reordering  
-- No EPUB import  
-- Limited image handling inside chapters  
-- No advanced styling system  
-
-This is a focused tool, not a full publishing pipeline.
-
----
-
-## Roadmap
-
-- Chapter reordering  
-- Inline image management  
-- EPUB import workflow  
-- Search and replace  
-- Notes / footnotes  
-- Theme customization  
-- UI refinement  
-
----
-
-## Tech Stack
-
-- HTML
-- CSS
-- Vanilla JavaScript
-- Toast UI Editor
-- Marked
-- DOMPurify
-- JSZip
-
----
-
-## Design Principles
-
-- Local-first  
-- Zero setup  
-- Single-file portability  
-- Fast iteration  
-- Practical over complex  
-
----
-
-## License
-
-MIT
-
----
-
-## Author
-
-Mike
+Projects are saved as:
